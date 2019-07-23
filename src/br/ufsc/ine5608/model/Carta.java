@@ -1,17 +1,17 @@
 package br.ufsc.ine5608.model;
 
-import br.ufsc.ine5608.shared.CardTypeEnum;
+import br.ufsc.ine5608.shared.TipoCartaEnum;
 
-public class Card {
+public class Carta {
 
     private Long id;
     private Long number;
-    private CardTypeEnum cardTypeEnum;
+    private TipoCartaEnum tipoCartaEnum;
 
-    public Card(Long number, CardTypeEnum cardTypeEnum) {
+    public Carta(Long number, TipoCartaEnum tipoCartaEnum) {
         this.id = id;
         this.number = number;
-        this.cardTypeEnum = cardTypeEnum;
+        this.tipoCartaEnum = tipoCartaEnum;
     }
 
     public Long getId() {
@@ -26,11 +26,11 @@ public class Card {
         this.number = number;
     }
 
-    public CardTypeEnum getCardTypeEnum() {
-        return cardTypeEnum;
+    public TipoCartaEnum getTipoCartaEnum() {
+        return tipoCartaEnum;
     }
 
-    public void setCardTypeEnum(CardTypeEnum cardTypeEnum) {
-        this.cardTypeEnum = cardTypeEnum;
+    public void setTipoCartaEnum(TipoCartaEnum tipoCartaEnum) {
+        this.tipoCartaEnum = tipoCartaEnum;
     }
 }

@@ -1,5 +1,5 @@
 package br.ufsc.ine5608.shared;
 
-public enum CardTypeEnum {
-    HEART,SPADE,CLUB,DIAMOND
+public enum TipoCartaEnum {
+    COPAS,ESPADA,PAUS,OURO
 }

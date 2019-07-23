@@ -1,31 +1,38 @@
 package br.ufsc.ine5608.controller;
 
-import br.ufsc.ine5608.model.Card;
-import br.ufsc.ine5608.model.CardDeck;
-import br.ufsc.ine5608.model.Player;
+import br.ufsc.ine5608.model.AtorJogador;
+import br.ufsc.ine5608.model.Baralho;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TableController {
-    private static TableController ourInstance = new TableController();
+public class MesaControlador {
+    private static MesaControlador ourInstance = new MesaControlador();
 
-    public static TableController getInstance() {
+    public static MesaControlador getInstance() {
         return ourInstance;
     }
 
-    private TableController() {
+    private MesaControlador() {
     }
 
-    private List<Player> players = new ArrayList<>();
-    private CardDeck mainDeck = new CardDeck();
-    private CardDeck visibleDecl = new CardDeck();
+    private List<AtorJogador> atorJogadors = new ArrayList<>();
+    private Baralho mainDeck = new Baralho();
+    private Baralho visibleDecl = new Baralho();
 
     private void prepare(){
         //loadSettings
         //loadDeck
-        // load players
+        // load atorJogadors
         //define turn
     }
 
+    public Baralho getBarallho() {
+    }
+
+    public void carregaConfiguracaoInicial() {
+    }
+
+    public void carregaTelaInicial() {
+    }
 }

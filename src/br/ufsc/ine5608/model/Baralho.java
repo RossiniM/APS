@@ -1,19 +1,17 @@
 package br.ufsc.ine5608.model;
 
-import br.ufsc.ine5608.shared.DifficultyEnum;
-
 import java.util.HashMap;
 
-public  class CardDeck {
+public  class Baralho {
 
-    private HashMap<Long, Card> cardDeck;
+    private HashMap<Long, Carta> cardDeck;
 
 
-    public CardDeck(){
+    public Baralho(){
 
     }
 
-    public CardDeck(HashMap<Long, Card> cardDeck) {
+    public Baralho(HashMap<Long, Carta> cardDeck) {
         this.cardDeck = cardDeck;
     }
 }
