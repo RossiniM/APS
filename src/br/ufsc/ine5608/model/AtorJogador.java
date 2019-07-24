@@ -20,7 +20,7 @@ public class AtorJogador {
 
     public void carregarConfiguracaoInicial(Integer posicao) {
         mesaControlador.carregaConfiguracaoInicial();
-        this.baralho = mesaControlador.getBarallho();
+//        this.baralho = mesaControlador.getBarallho();
     }
 
     public boolean realizarConexao(String nome){

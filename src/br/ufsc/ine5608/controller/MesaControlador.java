@@ -27,7 +27,7 @@ public class MesaControlador {
         //define turn
     }
 
-    public Baralho getBarallho() {
+    public void getBarallho() {
     }
 
     public void carregaConfiguracaoInicial() {
