@@ -13,9 +13,13 @@ public class TelaPrincipal extends JFrame {
     private JMenuItem desconectarItem;
     private JMenuItem sobreItem;
     private JLabel board;
+    private JLabel labelNome;
     private JLabel nomeJ1;
+    private JLabel labelJ2;
     private JLabel nomeJ2;
+    private JLabel labelpontos;
     private JLabel pontosJ1;
+    private JLabel labelpontosJ2;
     private JLabel pontosJ2;
 
     private ImageIcon boardImg;
@@ -39,6 +43,8 @@ public class TelaPrincipal extends JFrame {
         setSize(1024, 780);
     }
 
+
+
     public void carregaLayout() {
 
         Container contentPane = getContentPane();
@@ -49,44 +55,48 @@ public class TelaPrincipal extends JFrame {
         gl.setAutoCreateGaps(true);
 
         criaMenu();
+        JPanel placar = criaPlacar();
 
         boardImg = new ImageIcon((getClass().getResource("../img/board.jpg")));
         board = new JLabel(boardImg);
         gl.setHorizontalGroup(
                 gl.createParallelGroup()
                         .addGroup(
-                                gl.createSequentialGroup().
-                                        addComponent(menuBarra, 50, 80, 100)
-                                        .addGroup(
-                                                gl.createParallelGroup()
-                                                .addComponent(nomeJ1)
-                                                .addComponent(pontosJ1)
-                                        )
-                                        .addGroup(
-                                                gl.createParallelGroup()
-                                                        .addComponent(nomeJ2)
-                                                        .addComponent(pontosJ2)
-                                        )
+                                gl.createSequentialGroup()
+                                        .addComponent(menuBarra, 50, 80, 100)
+                                        .addComponent(placar)
                                 )
                         .addComponent(board, 0, 700, 900));
         gl.setVerticalGroup(
                 gl.createSequentialGroup()
                 .addGroup(
-                        gl.createParallelGroup().
-                                addComponent(menuBarra, 20, 30, 50)
-                                .addGroup(
-                                        gl.createSequentialGroup()
-                                                .addComponent(nomeJ1)
-                                                .addComponent(pontosJ1)
-                                )
-                                .addGroup(
-                                        gl.createSequentialGroup()
-                                                .addComponent(nomeJ2)
-                                                .addComponent(pontosJ2)
-                                )
+                        gl.createParallelGroup()
+                                .addComponent(menuBarra, 20, 30, 50)
+                                .addComponent(placar)
                 )
                 .addComponent(board, 0, 600, 780));
         pack();
+    }
+
+    private JPanel criaPlacar(){
+        JPanel mostrador = new JPanel(new GridLayout(0, 3));
+
+        labelNome = new JLabel("Nome:");
+        nomeJ1 = new JLabel("Rossini");
+        nomeJ2 = new JLabel("Raphael");
+        labelpontos = new JLabel("Pontos: ");
+        pontosJ1 = new JLabel("10");
+        pontosJ2 = new JLabel("10");
+
+        mostrador.add(labelNome);
+        mostrador.add(nomeJ1);
+        mostrador.add(nomeJ2);
+
+        mostrador.add(labelpontos);
+        mostrador.add(pontosJ1);
+        mostrador.add(pontosJ2);
+        mostrador.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLoweredSoftBevelBorder(),"Jogadores"));
+        return mostrador;
     }
 
     public void criaMenu() {
@@ -107,10 +117,6 @@ public class TelaPrincipal extends JFrame {
         menuBarra.add(menu);
         menuBarra.add(sobre);
 
-        nomeJ1 = new JLabel("Jogador 1");
-        nomeJ2 = new JLabel("Jogador 2");
-        pontosJ1 = new JLabel("10");
-        pontosJ2 = new JLabel("10");
     }
 
     public void adicionaListenners() {
