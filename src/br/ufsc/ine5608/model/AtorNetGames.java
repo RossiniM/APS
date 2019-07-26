@@ -16,16 +16,18 @@ public class AtorNetGames implements OuvidorProxy {
 
     private boolean esperandoJogador;
 
-    public AtorNetGames(AtorJogador atorJogador) {
-        this.atorJogador = atorJogador;
+    public AtorNetGames() {
         proxy = Proxy.getInstance();
         proxy.addOuvinte(this);
     }
 
     @Override
-    public void iniciarNovaPartida(Integer posicao) {
-        esperandoJogador = false;
-        atorJogador.carregarConfiguracaoInicial(posicao);
+    public void iniciarNovaPartida(Integer numeroJogadores) {
+        try {
+            proxy.iniciarPartida(numeroJogadores);
+        } catch (NaoConectadoException e) {
+            e.printStackTrace();
+        }
     }
 
     public void iniciarPartida() {
@@ -36,10 +38,10 @@ public class AtorNetGames implements OuvidorProxy {
         }
     }
 
-    public boolean conectar(String nomeJogador) {
+    public boolean conectar(AtorJogador jogador) {
         try {
-            proxy.conectar("localhost", nomeJogador);
-            conectado = true;
+            proxy.conectar("localhost", jogador.getNome());
+            jogador.setConectado(true);
         } catch (JahConectadoException e) {
             e.printStackTrace();
         } catch (NaoPossivelConectarException e) {

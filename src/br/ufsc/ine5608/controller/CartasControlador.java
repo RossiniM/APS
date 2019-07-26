@@ -1,12 +1,12 @@
 package br.ufsc.ine5608.controller;
 
-public class CardController {
-    private static CardController ourInstance = new CardController();
+public class CartasControlador {
+    private static CartasControlador ourInstance = new CartasControlador();
 
-    public static CardController getInstance() {
+    public static CartasControlador getInstance() {
         return ourInstance;
     }
 
-    private CardController() {
+    private CartasControlador() {
     }
 }

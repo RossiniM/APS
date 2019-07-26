@@ -9,12 +9,17 @@ public class AtorJogador {
     private Baralho baralho;
     private String nome;
     private boolean turno;
+    private boolean conectado;
     private AtorNetGames atorNetGames;
     private MesaControlador mesaControlador;
 
+
+    public AtorJogador(String nome){
+        this.nome = nome;
+    }
     public AtorJogador(String nome, Baralho baralho) {
         mesaControlador = MesaControlador.getInstance();
-        atorNetGames = new AtorNetGames(this);
+        atorNetGames = new AtorNetGames();
         mesaControlador.carregaTelaInicial();
     }
 
@@ -25,7 +30,7 @@ public class AtorJogador {
 
     public boolean realizarConexao(String nome){
         this.nome = nome;
-        return atorNetGames.conectar(nome);
+        return atorNetGames.conectar(this);
     }
     public boolean iniciarPartida(){
         if(!atorNetGames.isConectado())return  false;
@@ -49,6 +54,9 @@ public class AtorJogador {
 
     public String getNome() {
         return nome;
+    }
+    public void setConectado(boolean status){
+        conectado = status;
     }
 
     public void setNome(String nome) {
