@@ -8,7 +8,7 @@ public class TelaPrincipal extends JFrame {
     private JMenuBar menuBarra;
     private JMenu menu;
     private JMenu sobre;
-    private JMenuItem conecartItem;
+    private JMenuItem conectarItem;
     private JMenuItem iniciarPartidaItem;
     private JMenuItem desconectarItem;
     private JMenuItem sobreItem;
@@ -34,6 +34,7 @@ public class TelaPrincipal extends JFrame {
     public void inicializa() {
         criaGUI();
         carregaLayout();
+        adicionaListenners();
     }
 
     public void criaGUI() {
@@ -82,8 +83,8 @@ public class TelaPrincipal extends JFrame {
         JPanel mostrador = new JPanel(new GridLayout(0, 3));
 
         labelNome = new JLabel("Nome:");
-        nomeJ1 = new JLabel("Rossini");
-        nomeJ2 = new JLabel("Raphael");
+        nomeJ1 = new JLabel("");
+        nomeJ2 = new JLabel("");
         labelpontos = new JLabel("Pontos: ");
         pontosJ1 = new JLabel("10");
         pontosJ2 = new JLabel("10");
@@ -105,23 +106,45 @@ public class TelaPrincipal extends JFrame {
 
         menu = new JMenu("Jogo");
         sobre = new JMenu("Sobre");
-        conecartItem = new JMenuItem("Conectar");
+        conectarItem = new JMenuItem("Conectar");
         iniciarPartidaItem = new JMenuItem("Iniciar Partida");
         desconectarItem = new JMenuItem("Desconectar");
         sobreItem = new JMenuItem("Sobre");
-
-        menu.add(conecartItem);
+        menu.add(conectarItem);
         menu.add(iniciarPartidaItem);
         menu.add(desconectarItem);
         sobre.add(sobreItem);
+        atualizarMenuDesconectado();
         menuBarra.add(menu);
         menuBarra.add(sobre);
 
     }
 
     public void adicionaListenners() {
-
+        conectarItem.addActionListener(
+                actionEvent -> {
+                    new TelaConectar(this,"Conectar",true);
+                    atualizarMenuConectado();
+                }
+        );
     }
+
+    private void atualizarMenuConectado() {
+        //todo colocar condicao de conectado
+        conectarItem.setEnabled(false);
+        iniciarPartidaItem.setEnabled(true);
+        desconectarItem.setEnabled(true);
+    }
+
+
+    private void atualizarMenuDesconectado() {
+        //todo colocar condicao de desconectado
+        
+        conectarItem.setEnabled(true);
+        iniciarPartidaItem.setEnabled(false);
+        desconectarItem.setEnabled(false);
+    }
+
 
     public void mostra() {
         setVisible(true);
