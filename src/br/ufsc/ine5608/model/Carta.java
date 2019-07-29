@@ -1,17 +1,29 @@
 package br.ufsc.ine5608.model;
 
-import br.ufsc.ine5608.shared.TipoCartaEnum;
+import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
-public class Carta {
+import java.awt.*;
+
+public class Carta implements Comparable<Carta> {
 
     private Long id;
     private Long number;
-    private TipoCartaEnum tipoCartaEnum;
+    private PosicaoTabuleiro posicaoTabuleiro = PosicaoTabuleiro.BARALHO;
+    private Color cor;
 
-    public Carta(Long number, TipoCartaEnum tipoCartaEnum) {
+    public Carta(long id, Long number, Color cor) {
+
         this.id = id;
         this.number = number;
-        this.tipoCartaEnum = tipoCartaEnum;
+        this.cor = cor;
+    }
+
+    public PosicaoTabuleiro getPosicaoTabuleiro() {
+        return posicaoTabuleiro;
+    }
+
+    public void setPosicaoTabuleiro(PosicaoTabuleiro posicaoTabuleiro) {
+        this.posicaoTabuleiro = posicaoTabuleiro;
     }
 
     public Long getId() {
@@ -26,11 +38,16 @@ public class Carta {
         this.number = number;
     }
 
-    public TipoCartaEnum getTipoCartaEnum() {
-        return tipoCartaEnum;
+    public Color getCorCartaEnum() {
+        return cor;
     }
 
-    public void setTipoCartaEnum(TipoCartaEnum tipoCartaEnum) {
-        this.tipoCartaEnum = tipoCartaEnum;
+    public void setCorCartaEnum(Color cor) {
+        this.cor = cor;
+    }
+
+    @Override
+    public int compareTo(Carta carta) {
+        return (int) (this.getNumber() - carta.getNumber());
     }
 }

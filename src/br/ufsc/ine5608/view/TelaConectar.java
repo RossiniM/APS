@@ -65,7 +65,7 @@ public class TelaConectar extends JDialog {
         conectarBotao.addActionListener(actionEvent -> {
             try {
                 MesaControlador.getInstance().criaJogador(nomeCampo.getText());
-                if (!MesaControlador.getInstance().conectar(nomeCampo.getText()))
+                if (!MesaControlador.getInstance().conectar())
                     throw new Exception("Não foi possível conectar");
                 JOptionPane.showMessageDialog(null, "Conexão bem sucedida!", "", JOptionPane.OK_OPTION);
             } catch (Exception e) {
