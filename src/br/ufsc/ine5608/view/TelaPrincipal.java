@@ -31,7 +31,6 @@ public class TelaPrincipal extends JFrame {
     private JButton jogar;
     private JPanel operacoes = new JPanel();
 
-    private ImageIcon boardImg;
 
     JPanel cartasJogador1;
     JPanel cartasJogador2;
@@ -76,7 +75,6 @@ public class TelaPrincipal extends JFrame {
         JPanel placar = criaPlacar();
 
         jogar = new JButton("Jogar");
-        boardImg = new ImageIcon((getClass().getResource("../img/board.jpg")));
         board = criaTabuleiro();
         gl.setHorizontalGroup(
                 gl.createParallelGroup()
