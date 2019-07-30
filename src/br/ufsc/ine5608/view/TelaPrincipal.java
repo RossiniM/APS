@@ -10,7 +10,6 @@ import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 
 public class TelaPrincipal extends JFrame {
 
@@ -228,8 +227,10 @@ public class TelaPrincipal extends JFrame {
         );
         jogar.addActionListener(actionEvent -> {
             try {
-                if (mesaControlador.validaJogada())
+                if (mesaControlador.realizarJogada()) {
+                    carregaLayout();
                     JOptionPane.showMessageDialog(null, "Sucesso bem sucedida", "", JOptionPane.INFORMATION_MESSAGE);
+                }
                 else
                     JOptionPane.showMessageDialog(null, "Valores incorretos", "", JOptionPane.WARNING_MESSAGE);
             } catch (Exception e) {

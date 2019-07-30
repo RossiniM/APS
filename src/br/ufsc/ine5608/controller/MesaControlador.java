@@ -5,7 +5,10 @@ import br.ufsc.ine5608.model.AtorNetGames;
 import br.ufsc.ine5608.model.Carta;
 import br.ufsc.ine5608.shared.OperacaoEnum;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 
@@ -24,6 +27,7 @@ public class MesaControlador {
     public HashMap<Long, Carta> cartaJogadorSelecionada = new HashMap<>();
     public HashMap<Long, Carta> cartaMesaSelecionada = new HashMap<>();
     public OperacaoEnum operacaoEnum;
+    public CartasControlador cartasControlador = CartasControlador.getInstance();
 
     public void setAdversario(AtorJogador adversario) {
         this.adversario = adversario;
@@ -59,7 +63,7 @@ public class MesaControlador {
         return false;
     }
 
-    public boolean validaJogada() throws Exception {
+    public boolean realizarJogada() throws Exception {
 
         List<Carta> cartaJogador = cartaJogadorSelecionada.values()
                 .stream()
@@ -67,14 +71,21 @@ public class MesaControlador {
 
         List<Carta> cartaMesa = new ArrayList<>(cartaMesaSelecionada.values());
 
-        if (validaCartas(cartaMesa, cartaJogador) && Objects.nonNull(operacaoEnum))
-            return CartasControlador.getInstance()
-                    .verificaOperacao(cartaJogador.get(0), cartaJogador.get(1), cartaMesa.get(0), operacaoEnum);
+        if (validaJogada(cartaMesa, cartaJogador) && Objects.nonNull(operacaoEnum))
+            if(cartasControlador.validaOperacao(cartaJogador.get(0), cartaJogador.get(1), cartaMesa.get(0), operacaoEnum))
+                return atualizaCartas(cartaJogador.get(0), cartaJogador.get(1), cartaMesa.get(0));
         return false;
 
     }
+    private boolean atualizaCartas(Carta cartaJogador1, Carta cartaJogador2,Carta cartaMesa) throws Exception {
 
-    private boolean validaCartas(List<Carta> cartasMesa, List<Carta> cartaJogador) throws Exception {
+        return cartasControlador
+                    .atualizaCartasJogador(jogador, cartaJogador1.getId(), cartaJogador2.getId()) &&
+                cartasControlador
+                        .atualizaCartasDaMesa(jogador,cartaMesa.getId());
+    }
+
+    private boolean validaJogada(List<Carta> cartasMesa, List<Carta> cartaJogador) throws Exception {
 
         if (cartasMesa.size() == 1 && cartaJogador.size() == 2)
             if (validaCor(cartasMesa.get(0), cartaJogador.get(0), cartaJogador.get(1)))
