@@ -14,8 +14,8 @@ import static java.awt.Color.*;
 public class CartasControlador {
     private static CartasControlador ourInstance = new CartasControlador();
 
-    private final int qtdCartasCor = 18;
-    private final int qtdTotalCartas = 36;
+    private final int qtdCartasCor = 12;
+    private final int qtdTotalCartas = 24;
     private final ArrayList<Color> cores = new ArrayList<Color>(Arrays.asList(black, red));
 
     private Baralho baralho = new Baralho();
