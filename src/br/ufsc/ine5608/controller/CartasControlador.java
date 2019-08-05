@@ -53,24 +53,24 @@ public class CartasControlador {
         }
     }
 
-    public boolean validaOperacao(Carta cartaJogador1, Carta cartaJogador2, Carta cartaMesa, OperacaoEnum operacao) {
+    public boolean validaOperacao(Carta carta1, Carta carta2, Carta cartaMesa, OperacaoEnum operacao) {
 
-        Long carta1 = cartaJogador1.getNumber();
-        Long carta2 = cartaJogador2.getNumber();
-        Long carta3 = cartaMesa.getNumber();
+        Long valorCarta1 = carta1.getNumero();
+        Long valorCarta2 = carta2.getNumero();
+        Long valorCartaMesa = cartaMesa.getNumero();
 
-        switch (operacao.getOperacao()) {
-            case "Soma":
-                return carta2 + carta1 == carta3;
+        switch (operacao) {
+            case SOMA:
+                return valorCartaMesa.equals(valorCarta1 + valorCarta2);
 
-            case "Subtracao":
-                return carta2 - carta1 == carta3;
+            case SUBTRACAO:
+                return valorCartaMesa.equals(valorCarta2 - valorCarta1);
 
-            case "Multiplicacao":
-                return carta2 * carta1 == carta3;
+            case MULTIPLICACAO:
+                return valorCartaMesa.equals(valorCarta1 * valorCarta2);
 
-            case "Divisao":
-                return carta2 / carta1 == carta3;
+            case DIVISAO:
+                return valorCartaMesa.equals(valorCarta2 / valorCarta1);
             default:
                 return false;
         }
@@ -95,7 +95,7 @@ public class CartasControlador {
     }
 
 
-    public boolean atualizaCartasDaMesa(AtorJogador jogador,long id) throws Exception {
+    public boolean atualizaCartasDaMesa(AtorJogador jogador, long id) throws Exception {
 
         Carta carta = baralho.getCartaPorId(id);
         if (Objects.nonNull(carta) && carta.getPosicaoTabuleiro() == PosicaoTabuleiro.MESA) {
