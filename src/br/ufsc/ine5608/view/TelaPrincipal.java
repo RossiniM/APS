@@ -10,7 +10,6 @@ import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Objects;
 
 public class TelaPrincipal extends JFrame {
 
@@ -186,7 +185,7 @@ public class TelaPrincipal extends JFrame {
     }
 
     private JToggleButton criaCarta(Carta carta) {
-        JToggleButton cartaBtn = new JToggleButton(String.valueOf(carta.getNumber()));
+        JToggleButton cartaBtn = new JToggleButton(String.valueOf(carta.getNumero()));
         AtorJogador jogador = mesaControlador.getJogador();
         if(carta.getPosicaoTabuleiro() == PosicaoTabuleiro.MESA)
             cartaBtn.setBackground(Color.orange);

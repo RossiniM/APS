@@ -2,7 +2,6 @@ package br.ufsc.ine5608.model;
 
 import br.ufsc.ine5608.controller.MesaControlador;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
-import br.ufsc.inf.leobr.cliente.Jogada;
 
 public class AtorJogador {
 

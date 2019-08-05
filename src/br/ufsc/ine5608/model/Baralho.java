@@ -45,7 +45,7 @@ public class Baralho {
     }
 
     private boolean verificaCarta(Carta carta, Color cor, long numero) {
-        return carta.getCorCartaEnum() == cor && carta.getNumber().equals(numero);
+        return carta.getCorCartaEnum() == cor && carta.getNumero().equals(numero);
     }
 
 }
