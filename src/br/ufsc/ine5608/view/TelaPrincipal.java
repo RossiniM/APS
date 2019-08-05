@@ -10,7 +10,6 @@ import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 
 public class TelaPrincipal extends JFrame {
 
@@ -22,6 +21,7 @@ public class TelaPrincipal extends JFrame {
     private JMenuItem desconectarItem;
     private JMenuItem sobreItem;
     private JPanel board;
+    private JPanel boardAtualizado;
     private JLabel labelNome;
     private JLabel nomeJ1;
     private JLabel nomeJ2;
@@ -30,6 +30,8 @@ public class TelaPrincipal extends JFrame {
     private JLabel pontosJ2;
     private JButton jogar;
     private JPanel operacoes = new JPanel();
+    private GroupLayout gl;
+    private Container contentPane;
 
 
     JPanel cartasJogador1;
@@ -62,13 +64,12 @@ public class TelaPrincipal extends JFrame {
 
     public void carregaLayout() {
 
-        Container contentPane = getContentPane();
-        GroupLayout gl = new GroupLayout(contentPane);
+        contentPane = getContentPane();
+        gl = new GroupLayout(contentPane);
         contentPane.setLayout(gl);
 
         gl.setAutoCreateContainerGaps(true);
         gl.setAutoCreateGaps(true);
-
 
         criaMenu();
         operacoes = criaOperacaoesRadioButton();
@@ -184,7 +185,7 @@ public class TelaPrincipal extends JFrame {
     }
 
     private JToggleButton criaCarta(Carta carta) {
-        JToggleButton cartaBtn = new JToggleButton(String.valueOf(carta.getNumber()));
+        JToggleButton cartaBtn = new JToggleButton(String.valueOf(carta.getNumero()));
         AtorJogador jogador = mesaControlador.getJogador();
         if(carta.getPosicaoTabuleiro() == PosicaoTabuleiro.MESA)
             cartaBtn.setBackground(Color.orange);
@@ -228,8 +229,14 @@ public class TelaPrincipal extends JFrame {
         );
         jogar.addActionListener(actionEvent -> {
             try {
-                if (mesaControlador.validaJogada())
+                if (mesaControlador.realizarJogada()) {
                     JOptionPane.showMessageDialog(null, "Sucesso bem sucedida", "", JOptionPane.INFORMATION_MESSAGE);
+                    contentPane.removeAll();
+                    contentPane = null;
+                    carregaLayout();
+                    adicionaListenners();
+
+                }
                 else
                     JOptionPane.showMessageDialog(null, "Valores incorretos", "", JOptionPane.WARNING_MESSAGE);
             } catch (Exception e) {

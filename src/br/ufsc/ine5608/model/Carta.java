@@ -7,14 +7,14 @@ import java.awt.*;
 public class Carta implements Comparable<Carta> {
 
     private Long id;
-    private Long number;
+    private Long numero;
     private PosicaoTabuleiro posicaoTabuleiro = PosicaoTabuleiro.BARALHO;
     private Color cor;
 
-    public Carta(long id, Long number, Color cor) {
+    public Carta(long id, Long numero, Color cor) {
 
         this.id = id;
-        this.number = number;
+        this.numero = numero;
         this.cor = cor;
     }
 
@@ -30,12 +30,12 @@ public class Carta implements Comparable<Carta> {
         return id;
     }
 
-    public Long getNumber() {
-        return number;
+    public Long getNumero() {
+        return numero;
     }
 
-    public void setNumber(Long number) {
-        this.number = number;
+    public void setNumero(Long numero) {
+        this.numero = numero;
     }
 
     public Color getCorCartaEnum() {
@@ -48,6 +48,6 @@ public class Carta implements Comparable<Carta> {
 
     @Override
     public int compareTo(Carta carta) {
-        return (int) (this.getNumber() - carta.getNumber());
+        return (int) (this.getNumero() - carta.getNumero());
     }
 }
