@@ -8,6 +8,7 @@ import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.awt.Color.*;
@@ -145,7 +146,7 @@ public class CartasControlador {
     }
 
     private Carta getPrimeiraCartaLivre() {
-        return getCartasLivres().values().stream().findFirst().orElse(null);
+        return getCartasLivres().stream().findFirst().orElse(null);
     }
     public void gerarBaralhoTotal1() {
         cores.forEach(this::adicionaCartas);
@@ -179,14 +180,16 @@ public class CartasControlador {
         }
 
     private Carta getCartaAleatoriaLivre() {
+        int posicaoCartaAleatoriaLivre = (int) Math.round((getCartasLivres().size()-1)*Math.random());
+        return getCartasLivres().get(posicaoCartaAleatoriaLivre)
 
     }
 
 
-    private HashMap<Long,Carta> getCartasLivres() {
-        return cartas.entrySet().stream()
-                .filter(cartaEntry -> cartaEntry.getValue().getPosicaoTabuleiro().equals(PosicaoTabuleiro.BARALHO))
-                .collect(Collectors.toMap())
+    public List<Carta> getCartasLivres() {
+        return cartas.values().stream()
+                .filter(cartas -> cartas.getPosicaoTabuleiro().equals(PosicaoTabuleiro.BARALHO))
+                .collect(Collectors.toList());
     }
 }
 
