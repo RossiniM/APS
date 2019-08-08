@@ -8,14 +8,17 @@ import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
 import java.awt.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.awt.Color.*;
 
 public class CartasControlador {
     private static CartasControlador ourInstance = new CartasControlador();
 
+    private HashMap<Long, Carta> cartas = new HashMap<>();
+
     private final int qtdCartasCor = 12;
-    private final int qtdTotalCartas = 24;
+    private final Long qtdTotalCartas = 24;
     private final ArrayList<Color> cores = new ArrayList<Color>(Arrays.asList(black, red));
 
     private Baralho baralho = new Baralho();
@@ -132,5 +135,63 @@ public class CartasControlador {
     private long geraIdRandomico() {
         return 1 + Math.round(Math.random() * (qtdTotalCartas - 1));
     }
+
+
+
+    private boolean temCartaLivre2() {
+       return cartas.values()
+               .stream()
+               .anyMatch( carta -> carta.getPosicaoTabuleiro() == PosicaoTabuleiro.BARALHO);
+    }
+
+    private Carta getPrimeiraCartaLivre() {
+        return getCartasLivres().values().stream().findFirst().orElse(null);
+    }
+    public void gerarBaralhoTotal1() {
+        cores.forEach(this::adicionaCartas);
+    }
+
+    public void adicionaCartas(Color cor){
+        long idCarta = 1;
+        for (long number = 1; number <= qtdCartasCor; number++) {
+            baralho.adicionaCarta(new Carta(idCarta, number, cor));
+            idCarta++;
+        }
+    }
+
+    public void distribuiCartas1(PosicaoTabuleiro posicaoTabuleiro, int qtdCartas) {
+        while (temCartaLivre2()&& !verificaCartasTabuleiroCompleto()) {
+            getCartaAleatoriaLivre().setPosicaoTabuleiro(posicaoTabuleiro);
+            }
+        }
+
+
+        private boolean verificaCartasTabuleiroCompleto(){
+        return verificaQtdCartasPosicao(PosicaoTabuleiro.JOGADOR1,qtdTotalCartas)
+                && verificaQtdCartasPosicao(PosicaoTabuleiro.JOGADOR2, qtdTotalCartas)
+                && verificaQtdCartasPosicao(PosicaoTabuleiro.MESA,qtdTotalCartas);
+        }
+        private boolean verificaQtdCartasPosicao(PosicaoTabuleiro posicaoTabuleiro, Long qtd){
+            return qtd.equals(cartas.values()
+                    .stream()
+                    .filter(carta -> carta.getPosicaoTabuleiro() == posicaoTabuleiro)
+                    .count());
+        }
+
+    private Carta getCartaAleatoriaLivre() {
+
+    }
+
+
+    private HashMap<Long,Carta> getCartasLivres() {
+        return cartas.entrySet().stream()
+                .filter(cartaEntry -> cartaEntry.getValue().getPosicaoTabuleiro().equals(PosicaoTabuleiro.BARALHO))
+                .collect(Collectors.toMap())
+    }
+}
+
+
+
+
 
 }
