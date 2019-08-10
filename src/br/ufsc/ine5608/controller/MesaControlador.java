@@ -5,10 +5,7 @@ import br.ufsc.ine5608.model.AtorNetGames;
 import br.ufsc.ine5608.model.Carta;
 import br.ufsc.ine5608.shared.OperacaoEnum;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -80,18 +77,14 @@ public class MesaControlador {
     }
 
     private boolean atualizaCartas(Carta cartaJogador1, Carta cartaJogador2, Carta cartaMesa) throws Exception {
-
         limpaCartasSelecionadas();
-        return cartasControlador
-                .atualizaCartasJogador(jogador, cartaJogador1.getId(), cartaJogador2.getId()) &&
-                cartasControlador
-                        .atualizaCartasDaMesa(jogador, cartaMesa.getId());
+        cartasControlador.atualizarCartas(jogador, Arrays.asList(cartaJogador1,cartaJogador2,cartaMesa));
+        return  true;
     }
 
     private void limpaCartasSelecionadas() {
-
-        cartaMesaSelecionada = new HashMap<>();
-        cartaJogadorSelecionada = new HashMap<>();
+        cartaMesaSelecionada.clear();
+        cartaJogadorSelecionada.clear();
     }
 
     private boolean validaJogada(List<Carta> cartasMesa, List<Carta> cartaJogador) throws Exception {

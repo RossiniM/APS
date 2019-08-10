@@ -1,8 +1,8 @@
 package br.ufsc.ine5608.controller;
 
 import br.ufsc.ine5608.model.AtorJogador;
-import br.ufsc.ine5608.model.Baralho;
 import br.ufsc.ine5608.model.Carta;
+import br.ufsc.ine5608.shared.ExcecoesMensagens;
 import br.ufsc.ine5608.shared.OperacaoEnum;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
@@ -11,18 +11,14 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.awt.Color.*;
-
 public class CartasControlador {
     private static CartasControlador ourInstance = new CartasControlador();
 
-    private HashMap<Long, Carta> cartas = new HashMap<>();
+    private Map<Long, Carta> cartas = new HashMap<>();
+    private Map<Long, Carta> cartasLivres = new HashMap<>();
 
-    private final int qtdCartasCor = 12;
-    private final Long qtdTotalCartas = 24;
-    private final ArrayList<Color> cores = new ArrayList<Color>(Arrays.asList(black, red));
-
-    private Baralho baralho = new Baralho();
+    private final int qtdCartasCor = 15;
+    private final List<Color> cores = Arrays.asList(Color.red, Color.black);
 
     public static CartasControlador getInstance() {
         return ourInstance;
@@ -31,33 +27,11 @@ public class CartasControlador {
     private CartasControlador() {
     }
 
-
-    public Baralho getBaralho() {
-        return baralho;
+    public Map<Long, Carta> getCartas() {
+        return cartas;
     }
 
-    public void gerarBaralhoTotal() {
-        long id = 1;
-        for (Color cor : cores) {
-            for (long number = 1; number <= qtdCartasCor; number++) {
-                baralho.adicionaCarta(new Carta(id, number, cor));
-                id++;
-            }
-        }
-    }
-
-    public void distribuiCartas(PosicaoTabuleiro posicaoTabuleiro, int qtdCartas) {
-        int i = 0;
-        while (i < qtdCartas) {
-            Carta carta = baralho.getCartas().get(geraIdRandomico());
-            if (Objects.equals(carta.getPosicaoTabuleiro(), PosicaoTabuleiro.BARALHO)) {
-                carta.setPosicaoTabuleiro(posicaoTabuleiro);
-                i++;
-            }
-        }
-    }
-
-    public boolean validaOperacao(Carta carta1, Carta carta2, Carta cartaMesa, OperacaoEnum operacao) {
+    boolean validaOperacao(Carta carta1, Carta carta2, Carta cartaMesa, OperacaoEnum operacao) {
 
         Long valorCarta1 = carta1.getNumero();
         Long valorCarta2 = carta2.getNumero();
@@ -80,121 +54,90 @@ public class CartasControlador {
         }
     }
 
-
-    public boolean atualizaCartasJogador(AtorJogador jogador, long... ids) throws Exception {
-
-        boolean status = false;
-        for (long id : ids) {
-            status = false;
-            Carta carta = baralho.getCartaPorId(id);
-            if (Objects.nonNull(carta) && carta.getPosicaoTabuleiro() != PosicaoTabuleiro.MESA) {
-                carta.setPosicaoTabuleiro(PosicaoTabuleiro.USADA);
-                baralho.getCartas().replace(id, carta);
-                status = true;
-            }
-        }
-        if (status)
-            adicionaCartaLivrePosicao(jogador.getPosicao());
-        return status;
+    public void gerarBaralhoTotal() {
+        cores.forEach(this::adicionaCartas);
+        atualizaCartasLivres();
     }
 
-
-    public boolean atualizaCartasDaMesa(AtorJogador jogador, long id) throws Exception {
-
-        Carta carta = baralho.getCartaPorId(id);
-        if (Objects.nonNull(carta) && carta.getPosicaoTabuleiro() == PosicaoTabuleiro.MESA) {
-            carta.setPosicaoTabuleiro(jogador.getPosicao());
-            baralho.getCartas().replace(id, carta);
-            adicionaCartaLivrePosicao(PosicaoTabuleiro.MESA);
-            return true;
+    private void adicionaCartas(Color cor) {
+        int qtdCartasBaralho = cartas.size();
+        for (long numero = 1; numero <= qtdCartasCor; numero++) {
+            cartas.put(qtdCartasBaralho + numero, new Carta(qtdCartasBaralho + numero, numero, cor));
         }
-        return false;
     }
 
-    public boolean adicionaCartaLivrePosicao(PosicaoTabuleiro posicaoTabuleiro) throws Exception {
-        if (temCartaLivre()) {
-            getCartaLivre().setPosicaoTabuleiro(posicaoTabuleiro);
-            return true;
-        }
-        throw new Exception("Nao ha mais cartas livre. O jogo acabou");
+    public void distribuiCartas(PosicaoTabuleiro posicaoTabuleiro, Long qtdCartas) throws Exception {
+        while (temCartaLivre() && !verificaPosicaoEstaCheia(posicaoTabuleiro, qtdCartas))
+            getCartaAleatoriaLivre().setPosicaoTabuleiro(posicaoTabuleiro);
+        atualizaCartasLivres();
     }
 
-    private Carta getCartaLivre() {
-        return baralho.getCartas().values()
+    private boolean verificaPosicaoEstaCheia(PosicaoTabuleiro posicaoTabuleiro, Long qtdCartas) {
+        return qtdCartas.equals(cartas.values()
                 .stream()
-                .filter(carta -> carta.getPosicaoTabuleiro() == PosicaoTabuleiro.BARALHO)
-                .findFirst().orElse(null);
+                .filter(carta -> carta.getPosicaoTabuleiro() == posicaoTabuleiro)
+                .count());
     }
 
     private boolean temCartaLivre() {
-        if (Objects.nonNull(getCartaLivre()))
-            return true;
-        return false;
+        return !cartasLivres.isEmpty();
+    }
+
+    private Carta getCartaAleatoriaLivre() throws Exception {
+        atualizaCartasLivres();
+        if (temCartaLivre())
+            return cartasLivres.get(getIdAleatorioCartaLivre());
+        throw new Exception(ExcecoesMensagens.CARTAS_ESGOTADAS);
+    }
+
+    private Long getIdAleatorioCartaLivre() {
+        List<Long> idsCartasLivres = new ArrayList<>(cartasLivres.keySet());
+        return idsCartasLivres.get(getIndiceAleatorio(idsCartasLivres.size()));
+    }
+
+    private int getIndiceAleatorio(int tamanho) {
+        return (int) Math.round((tamanho - 1) * Math.random());
+    }
+
+    private void atualizaCartasLivres() {
+        cartasLivres = cartas.entrySet().stream()
+                .filter(cartas -> cartas.getValue().getPosicaoTabuleiro().equals(PosicaoTabuleiro.BARALHO))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    void atualizarCartas(AtorJogador atorJogador, List<Carta> cartas) throws Exception {
+        for (Carta carta : cartas) {
+            atualizaCartasJogador(atorJogador, carta);
+            atualizaCartasMesa(atorJogador, carta);
+        }
+        adicionaCartaLivrePosicao(PosicaoTabuleiro.MESA);
+        adicionaCartaLivrePosicao(atorJogador.getPosicao());
     }
 
 
-    private long geraIdRandomico() {
-        return 1 + Math.round(Math.random() * (qtdTotalCartas - 1));
-    }
-
-
-
-    private boolean temCartaLivre2() {
-       return cartas.values()
-               .stream()
-               .anyMatch( carta -> carta.getPosicaoTabuleiro() == PosicaoTabuleiro.BARALHO);
-    }
-
-    private Carta getPrimeiraCartaLivre() {
-        return getCartasLivres().stream().findFirst().orElse(null);
-    }
-    public void gerarBaralhoTotal1() {
-        cores.forEach(this::adicionaCartas);
-    }
-
-    public void adicionaCartas(Color cor){
-        long idCarta = 1;
-        for (long number = 1; number <= qtdCartasCor; number++) {
-            baralho.adicionaCarta(new Carta(idCarta, number, cor));
-            idCarta++;
+    void atualizaCartasJogador(AtorJogador atorJogador, Carta carta) throws Exception {
+        if (carta.getPosicaoTabuleiro().equals(atorJogador.getPosicao())) {
+            carta.setPosicaoTabuleiro(PosicaoTabuleiro.USADA);
+            cartas.replace(carta.getId(), carta);
         }
     }
 
-    public void distribuiCartas1(PosicaoTabuleiro posicaoTabuleiro, int qtdCartas) {
-        while (temCartaLivre2()&& !verificaCartasTabuleiroCompleto()) {
+
+    void atualizaCartasMesa(AtorJogador atorJogador, Carta carta) throws Exception {
+        if (carta.getPosicaoTabuleiro().equals(PosicaoTabuleiro.MESA)) {
+            carta.setPosicaoTabuleiro(atorJogador.getPosicao());
+            cartas.replace(carta.getId(), carta);
+            atualizaCartasLivres();
+        }
+    }
+
+    private boolean adicionaCartaLivrePosicao(PosicaoTabuleiro posicaoTabuleiro) throws Exception {
+        if (temCartaLivre()) {
             getCartaAleatoriaLivre().setPosicaoTabuleiro(posicaoTabuleiro);
-            }
+            atualizaCartasLivres();
+            return true;
         }
-
-
-        private boolean verificaCartasTabuleiroCompleto(){
-        return verificaQtdCartasPosicao(PosicaoTabuleiro.JOGADOR1,qtdTotalCartas)
-                && verificaQtdCartasPosicao(PosicaoTabuleiro.JOGADOR2, qtdTotalCartas)
-                && verificaQtdCartasPosicao(PosicaoTabuleiro.MESA,qtdTotalCartas);
-        }
-        private boolean verificaQtdCartasPosicao(PosicaoTabuleiro posicaoTabuleiro, Long qtd){
-            return qtd.equals(cartas.values()
-                    .stream()
-                    .filter(carta -> carta.getPosicaoTabuleiro() == posicaoTabuleiro)
-                    .count());
-        }
-
-    private Carta getCartaAleatoriaLivre() {
-        int posicaoCartaAleatoriaLivre = (int) Math.round((getCartasLivres().size()-1)*Math.random());
-        return getCartasLivres().get(posicaoCartaAleatoriaLivre)
-
-    }
-
-
-    public List<Carta> getCartasLivres() {
-        return cartas.values().stream()
-                .filter(cartas -> cartas.getPosicaoTabuleiro().equals(PosicaoTabuleiro.BARALHO))
-                .collect(Collectors.toList());
+        throw new Exception(ExcecoesMensagens.CARTAS_ESGOTADAS);
     }
 }
 
-
-
-
-
-}

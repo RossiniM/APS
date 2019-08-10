@@ -3,13 +3,14 @@ package br.ufsc.ine5608.view;
 import br.ufsc.ine5608.controller.CartasControlador;
 import br.ufsc.ine5608.controller.MesaControlador;
 import br.ufsc.ine5608.model.AtorJogador;
-import br.ufsc.ine5608.model.Baralho;
 import br.ufsc.ine5608.model.Carta;
 import br.ufsc.ine5608.shared.OperacaoEnum;
-import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collection;
+
+import static br.ufsc.ine5608.shared.PosicaoTabuleiro.MESA;
 
 public class TelaPrincipal extends JFrame {
 
@@ -152,8 +153,8 @@ public class TelaPrincipal extends JFrame {
         cartasJogador1 = new JPanel(new GridLayout(0, 2));
         cartasJogador2 = new JPanel(new GridLayout(0, 2));
         cartasMesa = new JPanel(new GridLayout(0, 3));
-        Baralho baralho = CartasControlador.getInstance().getBaralho();
-        baralho.getCartas().values().forEach(carta -> {
+        Collection<Carta> cartas = CartasControlador.getInstance().getCartas().values();
+        cartas.forEach(carta -> {
             switch (carta.getPosicaoTabuleiro()) {
                 case MESA:
                     cartasMesa.add(criaCarta(carta));
@@ -187,9 +188,9 @@ public class TelaPrincipal extends JFrame {
     private JToggleButton criaCarta(Carta carta) {
         JToggleButton cartaBtn = new JToggleButton(String.valueOf(carta.getNumero()));
         AtorJogador jogador = mesaControlador.getJogador();
-        if(carta.getPosicaoTabuleiro() == PosicaoTabuleiro.MESA)
+        if(carta.getPosicaoTabuleiro() == MESA)
             cartaBtn.setBackground(Color.orange);
-        if(carta.getPosicaoTabuleiro() != PosicaoTabuleiro.MESA)
+        if(carta.getPosicaoTabuleiro() != MESA)
             cartaBtn.setBackground(Color.white);
         cartaBtn.setForeground(carta.getCorCartaEnum());
         cartaBtn.setToolTipText(carta.getId().toString());
@@ -207,14 +208,14 @@ public class TelaPrincipal extends JFrame {
     }
 
     private void removeDaPosicao(Carta carta) {
-        if (carta.getPosicaoTabuleiro() != PosicaoTabuleiro.MESA)
+        if (carta.getPosicaoTabuleiro() != MESA)
             mesaControlador.cartaJogadorSelecionada.remove(carta.getId());
         else
             mesaControlador.cartaMesaSelecionada.remove(carta.getId());
     }
 
     private void alocaNaPosicao(Carta carta) {
-        if (carta.getPosicaoTabuleiro() != PosicaoTabuleiro.MESA)
+        if (carta.getPosicaoTabuleiro() != MESA)
             mesaControlador.cartaJogadorSelecionada.put(carta.getId(), carta);
         else
             mesaControlador.cartaMesaSelecionada.put(carta.getId(), carta);
