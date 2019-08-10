@@ -3,6 +3,7 @@ package br.ufsc.ine5608.controller;
 import br.ufsc.ine5608.model.AtorJogador;
 import br.ufsc.ine5608.model.AtorNetGames;
 import br.ufsc.ine5608.model.Carta;
+import br.ufsc.ine5608.shared.ExcecoesMensagens;
 import br.ufsc.ine5608.shared.OperacaoEnum;
 
 import java.util.*;
@@ -55,7 +56,6 @@ public class MesaControlador {
     }
 
     public boolean conectar() {
-
         if (Objects.nonNull(jogador))
             return atorNetGames.conectar(jogador);
         return false;
@@ -63,17 +63,21 @@ public class MesaControlador {
 
     public boolean realizarJogada() throws Exception {
 
-        List<Carta> cartaJogador = cartaJogadorSelecionada.values()
-                .stream()
-                .filter(carta -> carta.getPosicaoTabuleiro() == jogador.getPosicao()).sorted().collect(toList());
-
+        List<Carta> cartaJogador = getCartasSelecionadas();
         List<Carta> cartaMesa = new ArrayList<>(cartaMesaSelecionada.values());
 
         if (validaJogada(cartaMesa, cartaJogador) && Objects.nonNull(operacaoEnum))
             if (cartasControlador.validaOperacao(cartaJogador.get(0), cartaJogador.get(1), cartaMesa.get(0), operacaoEnum))
                 return atualizaCartas(cartaJogador.get(0), cartaJogador.get(1), cartaMesa.get(0));
         return false;
+    }
 
+    private List<Carta> getCartasSelecionadas() {
+        return cartaJogadorSelecionada.values()
+                .stream()
+                .filter(carta -> carta.getPosicaoTabuleiro() == jogador.getPosicao())
+                .sorted()
+                .collect(toList());
     }
 
     private boolean atualizaCartas(Carta cartaJogador1, Carta cartaJogador2, Carta cartaMesa) throws Exception {
@@ -92,11 +96,12 @@ public class MesaControlador {
         if (cartasMesa.size() == 1 && cartaJogador.size() == 2)
             if (validaCor(cartasMesa.get(0), cartaJogador.get(0), cartaJogador.get(1)))
                 return true;
-        throw new Exception("Necessario selecionar duas cartas da mesma cor na sua mao, uma carta da mesa e uma operacao");
+        throw new Exception(ExcecoesMensagens.CARTAS_SELECAO_ERRADA);
     }
 
-    private boolean validaCor(Carta mesa, Carta nro1, Carta nro2) {
-        return mesa.getCorCartaEnum() == nro1.getCorCartaEnum() && nro1.getCorCartaEnum() == nro2.getCorCartaEnum();
+    private boolean validaCor(Carta mesa, Carta carta1, Carta carta2) {
+        return mesa.getCorCartaEnum().equals(carta1.getCorCartaEnum()) &&
+                carta1.getCorCartaEnum().equals(carta2.getCorCartaEnum());
     }
 
     public void iniciarPartida() {

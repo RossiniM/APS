@@ -115,7 +115,7 @@ public class CartasControlador {
     }
 
 
-    void atualizaCartasJogador(AtorJogador atorJogador, Carta carta) throws Exception {
+    private void atualizaCartasJogador(AtorJogador atorJogador, Carta carta) throws Exception {
         if (carta.getPosicaoTabuleiro().equals(atorJogador.getPosicao())) {
             carta.setPosicaoTabuleiro(PosicaoTabuleiro.USADA);
             cartas.replace(carta.getId(), carta);
@@ -123,7 +123,7 @@ public class CartasControlador {
     }
 
 
-    void atualizaCartasMesa(AtorJogador atorJogador, Carta carta) throws Exception {
+    private void atualizaCartasMesa(AtorJogador atorJogador, Carta carta) throws Exception {
         if (carta.getPosicaoTabuleiro().equals(PosicaoTabuleiro.MESA)) {
             carta.setPosicaoTabuleiro(atorJogador.getPosicao());
             cartas.replace(carta.getId(), carta);
@@ -131,11 +131,10 @@ public class CartasControlador {
         }
     }
 
-    private boolean adicionaCartaLivrePosicao(PosicaoTabuleiro posicaoTabuleiro) throws Exception {
+    private void adicionaCartaLivrePosicao(PosicaoTabuleiro posicaoTabuleiro) throws Exception {
         if (temCartaLivre()) {
             getCartaAleatoriaLivre().setPosicaoTabuleiro(posicaoTabuleiro);
             atualizaCartasLivres();
-            return true;
         }
         throw new Exception(ExcecoesMensagens.CARTAS_ESGOTADAS);
     }
