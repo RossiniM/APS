@@ -9,9 +9,9 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         CartasControlador.getInstance().gerarBaralhoTotal();
-        CartasControlador.getInstance().distribuiCartas(PosicaoTabuleiro.JOGADOR1,5);
-        CartasControlador.getInstance().distribuiCartas(PosicaoTabuleiro.JOGADOR2,5);
-        CartasControlador.getInstance().distribuiCartas(PosicaoTabuleiro.MESA,9);
+        CartasControlador.getInstance().distribuiCartas(PosicaoTabuleiro.JOGADOR1,5L);
+        CartasControlador.getInstance().distribuiCartas(PosicaoTabuleiro.JOGADOR2,5L);
+        CartasControlador.getInstance().distribuiCartas(PosicaoTabuleiro.MESA,9L);
 
 
         MesaControlador.getInstance().criaJogador("Rossini");
