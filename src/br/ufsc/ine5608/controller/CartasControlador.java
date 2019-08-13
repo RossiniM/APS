@@ -2,8 +2,8 @@ package br.ufsc.ine5608.controller;
 
 import br.ufsc.ine5608.model.AtorJogador;
 import br.ufsc.ine5608.model.Carta;
-import br.ufsc.ine5608.shared.ExcecoesMensagens;
-import br.ufsc.ine5608.shared.OperacaoEnum;
+import br.ufsc.ine5608.shared.Mensagens;
+import br.ufsc.ine5608.shared.OperadoresEnum;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
 import java.awt.*;
@@ -12,26 +12,37 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CartasControlador {
+
     private static CartasControlador ourInstance = new CartasControlador();
 
     private Map<Long, Carta> cartas = new HashMap<>();
     private Map<Long, Carta> cartasLivres = new HashMap<>();
-
-    private final int qtdCartasCor = 15;
+    private final int qtdCartasPorCor = 15;
     private final List<Color> cores = Arrays.asList(Color.red, Color.black);
 
     public static CartasControlador getInstance() {
         return ourInstance;
     }
 
-    private CartasControlador() {
-    }
+    private CartasControlador() {}
 
     public Map<Long, Carta> getCartas() {
         return cartas;
     }
 
-    boolean validaOperacao(Carta carta1, Carta carta2, Carta cartaMesa, OperacaoEnum operacao) {
+    Map<Long, Carta> getCartasLivres() {
+        return cartasLivres;
+    }
+
+    void setCartas(Map<Long, Carta> cartas) {
+        this.cartas = cartas;
+    }
+
+    void setCartasLivres(Map<Long, Carta> cartasLivres) {
+        this.cartasLivres = cartasLivres;
+    }
+
+    boolean validaOperacao(Carta carta1, Carta carta2, Carta cartaMesa, OperadoresEnum operacao) {
 
         Long valorCarta1 = carta1.getNumero();
         Long valorCarta2 = carta2.getNumero();
@@ -54,28 +65,28 @@ public class CartasControlador {
         }
     }
 
-    public void gerarBaralhoTotal() {
+    void gerarBaralhoTotal() {
         cores.forEach(this::adicionaCartas);
         atualizaCartasLivres();
     }
 
     private void adicionaCartas(Color cor) {
         int qtdCartasBaralho = cartas.size();
-        for (long numero = 1; numero <= qtdCartasCor; numero++) {
+        for (long numero = 1; numero <= qtdCartasPorCor; numero++) {
             cartas.put(qtdCartasBaralho + numero, new Carta(qtdCartasBaralho + numero, numero, cor));
         }
     }
 
-    public void distribuiCartas(PosicaoTabuleiro posicaoTabuleiro, Long qtdCartas) throws Exception {
-        while (temCartaLivre() && !verificaPosicaoEstaCheia(posicaoTabuleiro, qtdCartas))
+    void distribuiCartas(PosicaoTabuleiro posicaoTabuleiro, Long qtdCartasMaxima) throws Exception {
+        while (temCartaLivre() && !verificaPosicaoEstaCheia(posicaoTabuleiro, qtdCartasMaxima))
             getCartaAleatoriaLivre().setPosicaoTabuleiro(posicaoTabuleiro);
         atualizaCartasLivres();
     }
 
-    private boolean verificaPosicaoEstaCheia(PosicaoTabuleiro posicaoTabuleiro, Long qtdCartas) {
-        return qtdCartas.equals(cartas.values()
+    private boolean verificaPosicaoEstaCheia(PosicaoTabuleiro posicaoTabuleiro, Long qtdCartasMaxima) {
+        return qtdCartasMaxima.equals(cartas.values()
                 .stream()
-                .filter(carta -> carta.getPosicaoTabuleiro() == posicaoTabuleiro)
+                .filter(carta -> carta.getPosicaoTabuleiro().equals(posicaoTabuleiro))
                 .count());
     }
 
@@ -87,7 +98,7 @@ public class CartasControlador {
         atualizaCartasLivres();
         if (temCartaLivre())
             return cartasLivres.get(getIdAleatorioCartaLivre());
-        throw new Exception(ExcecoesMensagens.CARTAS_ESGOTADAS);
+        throw new Exception(Mensagens.CARTAS_ESGOTADAS);
     }
 
     private Long getIdAleatorioCartaLivre() {
@@ -95,8 +106,8 @@ public class CartasControlador {
         return idsCartasLivres.get(getIndiceAleatorio(idsCartasLivres.size()));
     }
 
-    private int getIndiceAleatorio(int tamanho) {
-        return (int) Math.round((tamanho - 1) * Math.random());
+    private int getIndiceAleatorio(int tamanhoArray) {
+        return (int) Math.round((tamanhoArray - 1) * Math.random());
     }
 
     private void atualizaCartasLivres() {
@@ -105,8 +116,8 @@ public class CartasControlador {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    void atualizarCartas(AtorJogador atorJogador, List<Carta> cartas) throws Exception {
-        for (Carta carta : cartas) {
+    void atualizarCartas(AtorJogador atorJogador, List<Carta> cartasJogada) throws Exception {
+        for (Carta carta : cartasJogada) {
             atualizaCartasJogador(atorJogador, carta);
             atualizaCartasMesa(atorJogador, carta);
         }
@@ -114,30 +125,27 @@ public class CartasControlador {
         adicionaCartaLivrePosicao(atorJogador.getPosicao());
     }
 
-
-    void atualizaCartasJogador(AtorJogador atorJogador, Carta carta) throws Exception {
-        if (carta.getPosicaoTabuleiro().equals(atorJogador.getPosicao())) {
-            carta.setPosicaoTabuleiro(PosicaoTabuleiro.USADA);
-            cartas.replace(carta.getId(), carta);
+    private void atualizaCartasJogador(AtorJogador atorJogador, Carta cartaJogador) throws Exception {
+        if (cartaJogador.getPosicaoTabuleiro().equals(atorJogador.getPosicao())) {
+            cartaJogador.setPosicaoTabuleiro(PosicaoTabuleiro.USADA);
+            cartas.replace(cartaJogador.getId(), cartaJogador);
         }
     }
 
-
-    void atualizaCartasMesa(AtorJogador atorJogador, Carta carta) throws Exception {
-        if (carta.getPosicaoTabuleiro().equals(PosicaoTabuleiro.MESA)) {
-            carta.setPosicaoTabuleiro(atorJogador.getPosicao());
-            cartas.replace(carta.getId(), carta);
+    private void atualizaCartasMesa(AtorJogador atorJogador, Carta cartaMesa) throws Exception {
+        if (cartaMesa.getPosicaoTabuleiro().equals(PosicaoTabuleiro.MESA)) {
+            cartaMesa.setPosicaoTabuleiro(atorJogador.getPosicao());
+            cartas.replace(cartaMesa.getId(), cartaMesa);
             atualizaCartasLivres();
         }
     }
 
-    private boolean adicionaCartaLivrePosicao(PosicaoTabuleiro posicaoTabuleiro) throws Exception {
+    private void adicionaCartaLivrePosicao(PosicaoTabuleiro posicaoTabuleiro) throws Exception {
         if (temCartaLivre()) {
             getCartaAleatoriaLivre().setPosicaoTabuleiro(posicaoTabuleiro);
             atualizaCartasLivres();
-            return true;
-        }
-        throw new Exception(ExcecoesMensagens.CARTAS_ESGOTADAS);
+        } else
+            throw new Exception(Mensagens.CARTAS_ESGOTADAS);
     }
 }
 

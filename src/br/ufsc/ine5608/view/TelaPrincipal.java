@@ -4,13 +4,15 @@ import br.ufsc.ine5608.controller.CartasControlador;
 import br.ufsc.ine5608.controller.MesaControlador;
 import br.ufsc.ine5608.model.AtorJogador;
 import br.ufsc.ine5608.model.Carta;
-import br.ufsc.ine5608.shared.OperacaoEnum;
+import br.ufsc.ine5608.shared.Mensagens;
+import br.ufsc.ine5608.shared.OperadoresEnum;
+import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Collection;
 
-import static br.ufsc.ine5608.shared.PosicaoTabuleiro.MESA;
+import static br.ufsc.ine5608.shared.PosicaoTabuleiro.*;
 
 public class TelaPrincipal extends JFrame {
 
@@ -77,6 +79,7 @@ public class TelaPrincipal extends JFrame {
         JPanel placar = criaPlacar();
 
         jogar = new JButton("Jogar");
+        jogar.setEnabled(mesaControlador.possoJogar());
         board = criaTabuleiro();
         gl.setHorizontalGroup(
                 gl.createParallelGroup()
@@ -111,11 +114,19 @@ public class TelaPrincipal extends JFrame {
         JPanel mostrador = new JPanel(new GridLayout(0, 3));
 
         labelNome = new JLabel("Nome:");
-        nomeJ1 = new JLabel("");
-        nomeJ2 = new JLabel("");
+
         labelpontos = new JLabel("Pontos: ");
         pontosJ1 = new JLabel("10");
         pontosJ2 = new JLabel("10");
+
+        nomeJ1 = new JLabel("");
+        nomeJ2 = new JLabel("");
+
+        if(mesaControlador.podeIniciarPartida()){
+            nomeJ1 = new JLabel(MesaControlador.getInstance().getJogador(PosicaoTabuleiro.JOGADOR1).getNome());
+            nomeJ2 = new JLabel(MesaControlador.getInstance().getJogador(PosicaoTabuleiro.JOGADOR2).getNome());
+        }
+
 
         mostrador.add(labelNome);
         mostrador.add(nomeJ1);
@@ -153,6 +164,20 @@ public class TelaPrincipal extends JFrame {
         cartasJogador1 = new JPanel(new GridLayout(0, 2));
         cartasJogador2 = new JPanel(new GridLayout(0, 2));
         cartasMesa = new JPanel(new GridLayout(0, 3));
+        if(mesaControlador.podeIniciarPartida())
+            carregaCartasTabuleiro();
+
+        tabuleiro.setBackground(Color.gray);
+        tabuleiro.setOpaque(true);
+        tabuleiro.add(cartasMesa, BorderLayout.CENTER);
+        tabuleiro.add(cartasJogador1, BorderLayout.LINE_START);
+        tabuleiro.add(cartasJogador2, BorderLayout.LINE_END);
+
+
+        return tabuleiro;
+    }
+
+    private void carregaCartasTabuleiro() {
         Collection<Carta> cartas = CartasControlador.getInstance().getCartas().values();
         cartas.forEach(carta -> {
             switch (carta.getPosicaoTabuleiro()) {
@@ -170,20 +195,11 @@ public class TelaPrincipal extends JFrame {
             }
         });
 
-        tabuleiro.setBackground(Color.gray);
-        tabuleiro.setOpaque(true);
-
         cartasMesa.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Cartas da mesa"));
-        cartasJogador1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Jogador 1"));
-        cartasJogador2.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Jogador 2"));
-
-        tabuleiro.add(cartasMesa, BorderLayout.CENTER);
-        tabuleiro.add(cartasJogador1, BorderLayout.LINE_START);
-        tabuleiro.add(cartasJogador2, BorderLayout.LINE_END);
-
-
-        return tabuleiro;
+        cartasJogador1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), mesaControlador.getJogador(JOGADOR1).getNome()));
+        cartasJogador2.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), mesaControlador.getJogador(JOGADOR2).getNome()));
     }
+
 
     private JToggleButton criaCarta(Carta carta) {
         JToggleButton cartaBtn = new JToggleButton(String.valueOf(carta.getNumero()));
@@ -228,30 +244,38 @@ public class TelaPrincipal extends JFrame {
                     atualizarMenuConectado();
                 }
         );
+        iniciarPartidaItem.addActionListener(
+                actionEvent -> {mesaControlador.iniciarPartida();}
+        );
+
         jogar.addActionListener(actionEvent -> {
             try {
                 if (mesaControlador.realizarJogada()) {
-                    JOptionPane.showMessageDialog(null, "Sucesso bem sucedida", "", JOptionPane.INFORMATION_MESSAGE);
-                    contentPane.removeAll();
-                    contentPane = null;
-                    carregaLayout();
-                    adicionaListenners();
-
+                    JOptionPane.showMessageDialog(null, Mensagens.OPERACAO_SUCESSO, "", JOptionPane.INFORMATION_MESSAGE);
+                    recarregaLayout();
                 }
                 else
-                    JOptionPane.showMessageDialog(null, "Valores incorretos", "", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, Mensagens.OPERACAO_ERRADA, "", JOptionPane.WARNING_MESSAGE);
+                mesaControlador.enviaJogada();
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e.getMessage(), "", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
 
+    public void recarregaLayout(){
+        contentPane.removeAll();
+        contentPane = null;
+        carregaLayout();
+        adicionaListenners();
+    }
+
     private JPanel criaOperacaoesRadioButton() {
         JPanel operacoes = new JPanel();
         ButtonGroup grupoBotoes = new ButtonGroup();
-        for (OperacaoEnum operacaoEnum : OperacaoEnum.values()) {
-            JRadioButton operacao = new JRadioButton(operacaoEnum.name(), false);
-            operacao.addActionListener(actionEvent -> mesaControlador.operacaoEnum = operacaoEnum);
+        for (OperadoresEnum operadoresEnum : OperadoresEnum.values()) {
+            JRadioButton operacao = new JRadioButton(operadoresEnum.name(), false);
+            operacao.addActionListener(actionEvent -> mesaControlador.operadoresEnum = operadoresEnum);
             grupoBotoes.add(operacao);
             operacoes.add(operacao);
         }
