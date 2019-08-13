@@ -1,7 +1,7 @@
 package br.ufsc.ine5608.view;
 
 import br.ufsc.ine5608.controller.MesaControlador;
-import br.ufsc.ine5608.shared.ExcecoesMensagens;
+import br.ufsc.ine5608.shared.Mensagens;
 
 import javax.swing.*;
 import java.awt.*;
@@ -67,8 +67,8 @@ public class TelaConectar extends JDialog {
             try {
                 MesaControlador.getInstance().criaJogador(nomeCampo.getText());
                 if (!MesaControlador.getInstance().conectar())
-                    throw new Exception(ExcecoesMensagens.ERRO_CONEXAO);
-                JOptionPane.showMessageDialog(null, ExcecoesMensagens.CONECTADO, "", JOptionPane.INFORMATION_MESSAGE);
+                    throw new Exception(Mensagens.ERRO_CONEXAO);
+                JOptionPane.showMessageDialog(null, Mensagens.CONECTADO, "", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e.getMessage(), "", JOptionPane.ERROR_MESSAGE);
@@ -76,5 +76,4 @@ public class TelaConectar extends JDialog {
         });
         cancelarBotao.addActionListener(actionEvent -> dispose());
     }
-
 }

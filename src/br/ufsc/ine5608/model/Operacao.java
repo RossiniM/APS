@@ -5,12 +5,12 @@ import br.ufsc.inf.leobr.cliente.Jogada;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Cartada implements Jogada {
+public class Operacao implements Jogada {
 
-    private Map<Long, Carta> cartas = new HashMap<>();
-    private Map<Long, Carta> cartasLivres = new HashMap<>();
+    private Map<Long, Carta> cartas;
+    private Map<Long, Carta> cartasLivres;
 
-    public Cartada(Map<Long, Carta> cartas, Map<Long, Carta> cartasLivres) {
+    public Operacao(Map<Long, Carta> cartas, Map<Long, Carta> cartasLivres) {
         this.cartas = cartas;
         this.cartasLivres = cartasLivres;
     }

@@ -30,7 +30,6 @@ public class AtorJogador {
     public boolean iniciarPartida() {
         if (!atorNetGames.isConectado()) return false;
         atorNetGames.iniciarPartida();
-        atorNetGames.setEsperandoJogador(true);
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {

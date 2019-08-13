@@ -35,16 +35,8 @@ public class Carta implements Comparable<Carta>, Jogada {
         return numero;
     }
 
-    public void setNumero(Long numero) {
-        this.numero = numero;
-    }
-
     public Color getCorCartaEnum() {
         return cor;
-    }
-
-    public void setCorCartaEnum(Color cor) {
-        this.cor = cor;
     }
 
     @Override

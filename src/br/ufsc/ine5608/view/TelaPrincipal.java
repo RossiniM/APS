@@ -4,14 +4,15 @@ import br.ufsc.ine5608.controller.CartasControlador;
 import br.ufsc.ine5608.controller.MesaControlador;
 import br.ufsc.ine5608.model.AtorJogador;
 import br.ufsc.ine5608.model.Carta;
-import br.ufsc.ine5608.shared.OperacaoEnum;
+import br.ufsc.ine5608.shared.Mensagens;
+import br.ufsc.ine5608.shared.OperadoresEnum;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Collection;
 
-import static br.ufsc.ine5608.shared.PosicaoTabuleiro.MESA;
+import static br.ufsc.ine5608.shared.PosicaoTabuleiro.*;
 
 public class TelaPrincipal extends JFrame {
 
@@ -195,8 +196,8 @@ public class TelaPrincipal extends JFrame {
         });
 
         cartasMesa.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Cartas da mesa"));
-        cartasJogador1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Jogador 1"));
-        cartasJogador2.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Jogador 2"));
+        cartasJogador1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), mesaControlador.getJogador(JOGADOR1).getNome()));
+        cartasJogador2.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), mesaControlador.getJogador(JOGADOR2).getNome()));
     }
 
 
@@ -250,11 +251,11 @@ public class TelaPrincipal extends JFrame {
         jogar.addActionListener(actionEvent -> {
             try {
                 if (mesaControlador.realizarJogada()) {
-                    JOptionPane.showMessageDialog(null, "Sucesso bem sucedida", "", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, Mensagens.OPERACAO_SUCESSO, "", JOptionPane.INFORMATION_MESSAGE);
                     recarregaLayout();
                 }
                 else
-                    JOptionPane.showMessageDialog(null, "Valores incorretos", "", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, Mensagens.OPERACAO_ERRADA, "", JOptionPane.WARNING_MESSAGE);
                 mesaControlador.enviaJogada();
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e.getMessage(), "", JOptionPane.ERROR_MESSAGE);
@@ -272,9 +273,9 @@ public class TelaPrincipal extends JFrame {
     private JPanel criaOperacaoesRadioButton() {
         JPanel operacoes = new JPanel();
         ButtonGroup grupoBotoes = new ButtonGroup();
-        for (OperacaoEnum operacaoEnum : OperacaoEnum.values()) {
-            JRadioButton operacao = new JRadioButton(operacaoEnum.name(), false);
-            operacao.addActionListener(actionEvent -> mesaControlador.operacaoEnum = operacaoEnum);
+        for (OperadoresEnum operadoresEnum : OperadoresEnum.values()) {
+            JRadioButton operacao = new JRadioButton(operadoresEnum.name(), false);
+            operacao.addActionListener(actionEvent -> mesaControlador.operadoresEnum = operadoresEnum);
             grupoBotoes.add(operacao);
             operacoes.add(operacao);
         }

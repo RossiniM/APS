@@ -10,9 +10,6 @@ public class AtorNetGames implements OuvidorProxy {
 
     private Proxy proxy;
     private boolean conectado = false;
-    private AtorJogador atorJogador;
-
-    private boolean esperandoJogador;
 
     public AtorNetGames() {
         proxy = Proxy.getInstance();
@@ -21,7 +18,7 @@ public class AtorNetGames implements OuvidorProxy {
 
     @Override
     public void iniciarNovaPartida(Integer posicao) {
-            MesaControlador.getInstance().tratarIniciarPartida(posicao);
+        MesaControlador.getInstance().tratarIniciarPartida(posicao);
     }
 
     public void iniciarPartida() {
@@ -42,12 +39,8 @@ public class AtorNetGames implements OuvidorProxy {
         return conectado;
     }
 
-    public boolean isConectado(){
+    boolean isConectado() {
         return conectado;
-    }
-
-    public void setEsperandoJogador(boolean esperandoJogador) {
-        this.esperandoJogador = esperandoJogador;
     }
 
     @Override
@@ -66,7 +59,7 @@ public class AtorNetGames implements OuvidorProxy {
         MesaControlador.getInstance().receberJogada(jogada);
     }
 
-    public void enviarJogada(Jogada jogada){
+    public void enviarJogada(Jogada jogada) {
         try {
             proxy.enviaJogada(jogada);
         } catch (NaoJogandoException e) {
@@ -82,11 +75,10 @@ public class AtorNetGames implements OuvidorProxy {
     public String informarNomeAdversario(String nomeUsuario) {
         String aux1 = proxy.obterNomeAdversario(1);
         String aux2 = proxy.obterNomeAdversario(2);
-        if (aux1.equals(nomeUsuario)){
+        if (aux1.equals(nomeUsuario)) {
             return aux2;
-        } else {
-            return aux1;
         }
+        return aux1;
     }
 
     @Override

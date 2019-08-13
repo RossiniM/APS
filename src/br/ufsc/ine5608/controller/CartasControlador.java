@@ -2,8 +2,8 @@ package br.ufsc.ine5608.controller;
 
 import br.ufsc.ine5608.model.AtorJogador;
 import br.ufsc.ine5608.model.Carta;
-import br.ufsc.ine5608.shared.ExcecoesMensagens;
-import br.ufsc.ine5608.shared.OperacaoEnum;
+import br.ufsc.ine5608.shared.Mensagens;
+import br.ufsc.ine5608.shared.OperadoresEnum;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
 import java.awt.*;
@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CartasControlador {
+
     private static CartasControlador ourInstance = new CartasControlador();
 
     private Map<Long, Carta> cartas = new HashMap<>();
@@ -23,8 +24,7 @@ public class CartasControlador {
         return ourInstance;
     }
 
-    private CartasControlador() {
-    }
+    private CartasControlador() {}
 
     public Map<Long, Carta> getCartas() {
         return cartas;
@@ -42,7 +42,7 @@ public class CartasControlador {
         this.cartasLivres = cartasLivres;
     }
 
-    boolean validaOperacao(Carta carta1, Carta carta2, Carta cartaMesa, OperacaoEnum operacao) {
+    boolean validaOperacao(Carta carta1, Carta carta2, Carta cartaMesa, OperadoresEnum operacao) {
 
         Long valorCarta1 = carta1.getNumero();
         Long valorCarta2 = carta2.getNumero();
@@ -98,7 +98,7 @@ public class CartasControlador {
         atualizaCartasLivres();
         if (temCartaLivre())
             return cartasLivres.get(getIdAleatorioCartaLivre());
-        throw new Exception(ExcecoesMensagens.CARTAS_ESGOTADAS);
+        throw new Exception(Mensagens.CARTAS_ESGOTADAS);
     }
 
     private Long getIdAleatorioCartaLivre() {
@@ -145,7 +145,7 @@ public class CartasControlador {
             getCartaAleatoriaLivre().setPosicaoTabuleiro(posicaoTabuleiro);
             atualizaCartasLivres();
         } else
-            throw new Exception(ExcecoesMensagens.CARTAS_ESGOTADAS);
+            throw new Exception(Mensagens.CARTAS_ESGOTADAS);
     }
 }
 

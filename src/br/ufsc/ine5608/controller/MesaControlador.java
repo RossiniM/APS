@@ -3,9 +3,9 @@ package br.ufsc.ine5608.controller;
 import br.ufsc.ine5608.model.AtorJogador;
 import br.ufsc.ine5608.model.AtorNetGames;
 import br.ufsc.ine5608.model.Carta;
-import br.ufsc.ine5608.model.Cartada;
-import br.ufsc.ine5608.shared.ExcecoesMensagens;
-import br.ufsc.ine5608.shared.OperacaoEnum;
+import br.ufsc.ine5608.model.Operacao;
+import br.ufsc.ine5608.shared.Mensagens;
+import br.ufsc.ine5608.shared.OperadoresEnum;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 import br.ufsc.ine5608.view.TelaPrincipal;
 import br.ufsc.inf.leobr.cliente.Jogada;
@@ -25,7 +25,7 @@ public class MesaControlador {
 
     public HashMap<Long, Carta> cartaJogadorSelecionada = new HashMap<>();
     public HashMap<Long, Carta> cartaMesaSelecionada = new HashMap<>();
-    public OperacaoEnum operacaoEnum;
+    public OperadoresEnum operadoresEnum;
     public CartasControlador cartasControlador = CartasControlador.getInstance();
     private AtorNetGames atorNetGames = new AtorNetGames();
     private AtorJogador jogador;
@@ -89,8 +89,8 @@ public class MesaControlador {
             List<Carta> cartaJogador = getCartasSelecionadas();
             List<Carta> cartaMesa = new ArrayList<>(cartaMesaSelecionada.values());
 
-            if (validaJogada(cartaMesa, cartaJogador) && Objects.nonNull(operacaoEnum))
-                if (cartasControlador.validaOperacao(cartaJogador.get(0), cartaJogador.get(1), cartaMesa.get(0), operacaoEnum))
+            if (validaJogada(cartaMesa, cartaJogador) && Objects.nonNull(operadoresEnum))
+                if (cartasControlador.validaOperacao(cartaJogador.get(0), cartaJogador.get(1), cartaMesa.get(0), operadoresEnum))
                     return atualizaCartas(cartaJogador.get(0), cartaJogador.get(1), cartaMesa.get(0));
             return false;
         }
@@ -121,7 +121,7 @@ public class MesaControlador {
         if (cartasMesa.size() == 1 && cartaJogador.size() == 2)
             if (validaCor(cartasMesa.get(0), cartaJogador.get(0), cartaJogador.get(1)))
                 return true;
-        throw new Exception(ExcecoesMensagens.CARTAS_SELECAO_ERRADA);
+        throw new Exception(Mensagens.CARTAS_SELECAO_ERRADA);
     }
 
     private boolean validaCor(Carta mesa, Carta carta1, Carta carta2) {
@@ -130,12 +130,12 @@ public class MesaControlador {
     }
 
     public  void receberJogada(Jogada jogada){
-        tratarRecebimentoJogada((Cartada) jogada);
+        tratarRecebimentoJogada((Operacao) jogada);
     }
 
 
     public void enviaJogada(){
-        atorNetGames.enviarJogada(new Cartada(cartasControlador.getCartas(),cartasControlador.getCartasLivres()));
+        atorNetGames.enviarJogada(new Operacao(cartasControlador.getCartas(),cartasControlador.getCartasLivres()));
         vez = false;
     }
     public boolean podeIniciarPartida(){
@@ -163,7 +163,7 @@ public class MesaControlador {
         }
     }
 
-    private void tratarRecebimentoJogada(Cartada turno){
+    private void tratarRecebimentoJogada(Operacao turno){
         cartasControlador.setCartas(turno.getCartas());
         cartasControlador.setCartasLivres(turno.getCartasLivres());
         vez = true;
