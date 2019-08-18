@@ -79,7 +79,7 @@ public class TelaPrincipal extends JFrame {
         JPanel placar = criaPlacar();
 
         jogar = new JButton("Jogar");
-        jogar.setEnabled(mesaControlador.possoJogar());
+        jogar.setEnabled(mesaControlador.ehMinhaVez());
         board = criaTabuleiro();
         gl.setHorizontalGroup(
                 gl.createParallelGroup()
@@ -123,8 +123,8 @@ public class TelaPrincipal extends JFrame {
         nomeJ2 = new JLabel("");
 
         if(mesaControlador.podeIniciarPartida()){
-            nomeJ1 = new JLabel(MesaControlador.getInstance().getJogador(PosicaoTabuleiro.JOGADOR1).getNome());
-            nomeJ2 = new JLabel(MesaControlador.getInstance().getJogador(PosicaoTabuleiro.JOGADOR2).getNome());
+            nomeJ1 = new JLabel(MesaControlador.getInstance().getJogadorNaPosicao(PosicaoTabuleiro.JOGADOR1).getNome());
+            nomeJ2 = new JLabel(MesaControlador.getInstance().getJogadorNaPosicao(PosicaoTabuleiro.JOGADOR2).getNome());
         }
 
 
@@ -196,8 +196,8 @@ public class TelaPrincipal extends JFrame {
         });
 
         cartasMesa.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Cartas da mesa"));
-        cartasJogador1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), mesaControlador.getJogador(JOGADOR1).getNome()));
-        cartasJogador2.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), mesaControlador.getJogador(JOGADOR2).getNome()));
+        cartasJogador1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), mesaControlador.getJogadorNaPosicao(JOGADOR1).getNome()));
+        cartasJogador2.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), mesaControlador.getJogadorNaPosicao(JOGADOR2).getNome()));
     }
 
 
@@ -275,7 +275,7 @@ public class TelaPrincipal extends JFrame {
         ButtonGroup grupoBotoes = new ButtonGroup();
         for (OperadoresEnum operadoresEnum : OperadoresEnum.values()) {
             JRadioButton operacao = new JRadioButton(operadoresEnum.name(), false);
-            operacao.addActionListener(actionEvent -> mesaControlador.operadoresEnum = operadoresEnum);
+            operacao.addActionListener(actionEvent -> mesaControlador.operacao = operadoresEnum);
             grupoBotoes.add(operacao);
             operacoes.add(operacao);
         }
