@@ -5,11 +5,14 @@ import br.ufsc.inf.leobr.cliente.Jogada;
 
 import java.awt.*;
 
+import static br.ufsc.ine5608.shared.PosicaoTabuleiro.BARALHO;
+import static br.ufsc.ine5608.shared.PosicaoTabuleiro.MESA;
+
 public class Carta implements Comparable<Carta>, Jogada {
 
     private Long id;
     private Long numero;
-    private PosicaoTabuleiro posicaoTabuleiro = PosicaoTabuleiro.BARALHO;
+    private PosicaoTabuleiro posicaoTabuleiro = BARALHO;
     private Color cor;
 
     public Carta(long id, Long numero, Color cor) {
@@ -41,6 +44,10 @@ public class Carta implements Comparable<Carta>, Jogada {
 
     @Override
     public int compareTo(Carta carta) {
-        return (int) (this.getNumero() - carta.getNumero());
+        if (this.getPosicaoTabuleiro() != MESA && carta.getPosicaoTabuleiro() != MESA)
+            return (int) (this.getNumero() - carta.getNumero());
+        if (this.getPosicaoTabuleiro() == MESA)
+            return -1;
+        return 1;
     }
 }

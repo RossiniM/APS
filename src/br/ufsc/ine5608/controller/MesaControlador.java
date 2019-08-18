@@ -10,8 +10,12 @@ import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 import br.ufsc.ine5608.view.TelaPrincipal;
 import br.ufsc.inf.leobr.cliente.Jogada;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.BiPredicate;
 
+import static br.ufsc.ine5608.shared.Constantes.*;
 import static br.ufsc.ine5608.shared.PosicaoTabuleiro.*;
 import static java.util.stream.Collectors.toList;
 
@@ -25,41 +29,25 @@ public class MesaControlador {
 
     public HashMap<Long, Carta> cartaJogadorSelecionada = new HashMap<>();
     public HashMap<Long, Carta> cartaMesaSelecionada = new HashMap<>();
-    public OperadoresEnum operadoresEnum;
-    public CartasControlador cartasControlador = CartasControlador.getInstance();
+    public OperadoresEnum operacao;
+    private CartasControlador cartasControlador = CartasControlador.getInstance();
     private AtorNetGames atorNetGames = new AtorNetGames();
+
     private AtorJogador jogador;
     private AtorJogador adversario;
+
     private TelaPrincipal butterFly;
 
     private boolean conectado = false;
     private boolean primeiraRodada = true;
-
     private boolean vez = false;
 
-    public void setAdversario(AtorJogador adversario) {
-        this.adversario = adversario;
-    }
-
     private MesaControlador() {
-
     }
-    public void inicializa(TelaPrincipal telaPrincipal){
+
+    public void inicializa(TelaPrincipal telaPrincipal) {
         butterFly = telaPrincipal;
         butterFly.mostra();
-
-    }
-
-    public void criaJogador(String nome) throws Exception {
-
-        if (Objects.nonNull(nome) && !nome.isEmpty()) {
-            if (Objects.isNull(jogador)) {
-                jogador = new AtorJogador(nome);
-                return;
-            }
-            adversario = new AtorJogador(nome);
-        } else
-            throw new Exception("Campo invalido");
     }
 
     public AtorJogador getJogador() {
@@ -70,45 +58,67 @@ public class MesaControlador {
         return adversario;
     }
 
-    public AtorJogador getJogador(PosicaoTabuleiro posicaoTabuleiro) {
-        if (jogador.getPosicao() == posicaoTabuleiro)
-            return  jogador;
-        return adversario;
+    public AtorJogador getJogadorNaPosicao(PosicaoTabuleiro posicaoTabuleiro) {
+        return (jogador.getPosicao() == posicaoTabuleiro) ? jogador : adversario;
     }
+
     public boolean conectar() {
         if (Objects.nonNull(jogador))
             return atorNetGames.conectar(jogador);
         return false;
     }
 
-    public boolean possoJogar(){
-        return vez;
-    }
     public boolean realizarJogada() throws Exception {
-        if(vez) {
-            List<Carta> cartaJogador = getCartasSelecionadas();
-            List<Carta> cartaMesa = new ArrayList<>(cartaMesaSelecionada.values());
-
-            if (validaJogada(cartaMesa, cartaJogador) && Objects.nonNull(operadoresEnum))
-                if (cartasControlador.validaOperacao(cartaJogador.get(0), cartaJogador.get(1), cartaMesa.get(0), operadoresEnum))
-                    return atualizaCartas(cartaJogador.get(0), cartaJogador.get(1), cartaMesa.get(0));
+        if (ehMinhaVez()) {
+            List<Carta> cartasDaJogada = getCartasDaJogada();
+            if (jogadaEhValida().and(cartasControlador.operacaoEhValida()).test(cartasDaJogada, operacao))
+                return atualizaCartas(cartasDaJogada);
             return false;
         }
         return false;
     }
 
-    private List<Carta> getCartasSelecionadas() {
+    public boolean ehMinhaVez() {
+        return vez;
+    }
+
+    private List<Carta> getCartasDaJogada() {
         return cartaJogadorSelecionada.values()
                 .stream()
-                .filter(carta -> carta.getPosicaoTabuleiro() == jogador.getPosicao())
+                .filter(carta ->
+                        carta.getPosicaoTabuleiro().equals(jogador.getPosicao()) ||
+                                carta.getPosicaoTabuleiro().equals(MESA))
                 .sorted()
                 .collect(toList());
     }
 
-    private boolean atualizaCartas(Carta cartaJogador1, Carta cartaJogador2, Carta cartaMesa) throws Exception {
+    private BiPredicate<List<Carta>, OperadoresEnum> jogadaEhValida() {
+        return this::jogadaEhValida;
+    }
+
+    private boolean jogadaEhValida(List<Carta> cartasJogada, OperadoresEnum operacao) {
+        if (numeroCartasJogadaEhValida(cartasJogada))
+            return corEhValida(cartasJogada.get(PRIMEIRA_CARTA_JOGADOR), cartasJogada.get(SEGUNDA_CARTA_JOGADOR), cartasJogada.get(CARTA_MESA));
+        return false;
+    }
+
+    private boolean numeroCartasJogadaEhValida(List<Carta> cartasJogada) {
+        return cartasJogada.stream()
+                .filter(carta -> carta.getPosicaoTabuleiro() == jogador.getPosicao()).count() == 2
+                &&
+                cartasJogada.stream().
+                        filter(carta -> carta.getPosicaoTabuleiro() == MESA).count() == 1;
+    }
+
+    private boolean corEhValida(Carta mesa, Carta carta1, Carta carta2) {
+        return mesa.getCorCartaEnum().equals(carta1.getCorCartaEnum()) &&
+                carta1.getCorCartaEnum().equals(carta2.getCorCartaEnum());
+    }
+
+    private boolean atualizaCartas(List<Carta> cartasDaJogada) throws Exception {
         limpaCartasSelecionadas();
-        cartasControlador.atualizarCartas(jogador, Arrays.asList(cartaJogador1,cartaJogador2,cartaMesa));
-        return  true;
+        cartasControlador.atualizarCartas(jogador, cartasDaJogada);
+        return true;
     }
 
     private void limpaCartasSelecionadas() {
@@ -116,71 +126,67 @@ public class MesaControlador {
         cartaJogadorSelecionada.clear();
     }
 
-    private boolean validaJogada(List<Carta> cartasMesa, List<Carta> cartaJogador) throws Exception {
-
-        if (cartasMesa.size() == 1 && cartaJogador.size() == 2)
-            if (validaCor(cartasMesa.get(0), cartaJogador.get(0), cartaJogador.get(1)))
-                return true;
-        throw new Exception(Mensagens.CARTAS_SELECAO_ERRADA);
-    }
-
-    private boolean validaCor(Carta mesa, Carta carta1, Carta carta2) {
-        return mesa.getCorCartaEnum().equals(carta1.getCorCartaEnum()) &&
-                carta1.getCorCartaEnum().equals(carta2.getCorCartaEnum());
-    }
-
-    public  void receberJogada(Jogada jogada){
+    public void receberJogada(Jogada jogada) {
         tratarRecebimentoJogada((Operacao) jogada);
     }
 
+    private void tratarRecebimentoJogada(Operacao operacao) {
+        cartasControlador.setCartas(operacao.getCartas());
+        cartasControlador.setCartasLivres(operacao.getCartasLivres());
+        vez = true;
+        butterFly.recarregaLayout();
+    }
 
-    public void enviaJogada(){
-        atorNetGames.enviarJogada(new Operacao(cartasControlador.getCartas(),cartasControlador.getCartasLivres()));
+    public void enviaJogada() {
+        atorNetGames.enviarJogada(new Operacao(cartasControlador.getCartas(), cartasControlador.getCartasLivres()));
         vez = false;
     }
-    public boolean podeIniciarPartida(){
-        return  conectado;
+
+    public boolean podeIniciarPartida() {
+        return conectado;
     }
 
     public void iniciarPartida() {
         atorNetGames.iniciarPartida();
     }
 
-    public void tratarIniciarPartida(Integer posicao )  {
+    public void tratarIniciarPartida(Integer posicaoJogador) {
         try {
-            System.out.println("Posicao e"+posicao.toString());
             criaJogador(atorNetGames.informarNomeAdversario(jogador.getNome()));
-            jogador.setPosicao(PosicaoTabuleiro.values()[posicao]);
+            jogador.setPosicao(PosicaoTabuleiro.values()[posicaoJogador]);
             adversario.setPosicao(getPosicaoOposta(jogador.getPosicao()));
             conectado = true;
-            if(jogador.getPosicao().equals(JOGADOR1) && primeiraRodada) {
-                gerarConfiguracaoInicial();
-                butterFly.recarregaLayout();
-                this.enviaJogada();
+            if (jogador.getPosicao().equals(JOGADOR1) && primeiraRodada) {
+                carregaConfiguracaoInicial();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void tratarRecebimentoJogada(Operacao turno){
-        cartasControlador.setCartas(turno.getCartas());
-        cartasControlador.setCartasLivres(turno.getCartasLivres());
-        vez = true;
-        butterFly.recarregaLayout();
+    public void criaJogador(String nome) throws Exception {
+        if (Objects.nonNull(nome) && !nome.isEmpty()) {
+            if (Objects.isNull(jogador)) jogador = new AtorJogador(nome);
+            adversario = new AtorJogador(nome);
+        } else
+            throw new Exception(Mensagens.CAMPO_INVALIDO);
     }
 
-    public void gerarConfiguracaoInicial() throws Exception {
+    private void carregaConfiguracaoInicial() throws Exception {
+        distribuiCartas();
+        butterFly.recarregaLayout();
+        this.enviaJogada();
+    }
+
+    private void distribuiCartas() throws Exception {
         cartasControlador.gerarBaralhoTotal();
-        cartasControlador.distribuiCartas(jogador.getPosicao(),5L);
-        cartasControlador.distribuiCartas(adversario.getPosicao(),5L);
-        cartasControlador.distribuiCartas(MESA,9L);
+        cartasControlador.distribuiCartas(jogador.getPosicao(), 5L);
+        cartasControlador.distribuiCartas(adversario.getPosicao(), 5L);
+        cartasControlador.distribuiCartas(MESA, 9L);
         primeiraRodada = false;
     }
-    public PosicaoTabuleiro getPosicaoOposta(PosicaoTabuleiro posicaoTabuleiro){
-        if (posicaoTabuleiro == JOGADOR1) {
-            return JOGADOR2;
-        }
-        return JOGADOR1;
+
+    private PosicaoTabuleiro getPosicaoOposta(PosicaoTabuleiro posicaoTabuleiro) {
+        return (posicaoTabuleiro == JOGADOR1) ? JOGADOR2 : JOGADOR1;
     }
 }
