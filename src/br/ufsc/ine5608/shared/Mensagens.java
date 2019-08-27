@@ -12,5 +12,7 @@ public class Mensagens {
     public static final String OPERACAO_SUCESSO = "Operação bem sucedida";
     public static final String OPERACAO_ERRADA = "Operação incorreta";
 
+    public static final String CAMPO_INVALIDO = "Campos inválido";
+
 
 }

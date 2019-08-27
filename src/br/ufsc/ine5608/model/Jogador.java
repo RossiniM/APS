@@ -1,9 +1,10 @@
 package br.ufsc.ine5608.model;
 
-import br.ufsc.ine5608.controller.MesaControlador;
+import br.ufsc.ine5608.actor.AtorJogador;
+import br.ufsc.ine5608.actor.AtorNetGames;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
-public class AtorJogador {
+public class Jogador {
 
     private int pontuacao;
     private String nome;
@@ -11,9 +12,9 @@ public class AtorJogador {
     private boolean turno;
     private boolean conectado;
     private AtorNetGames atorNetGames;
-    private MesaControlador mesaControlador;
+    private AtorJogador mesaControlador;
 
-    public AtorJogador(String nome) {
+    public Jogador(String nome) {
         this.nome = nome;
 
     }
@@ -24,18 +25,6 @@ public class AtorJogador {
 
     public void setPosicao(PosicaoTabuleiro posicao) {
         this.posicao = posicao;
-    }
-
-
-    public boolean iniciarPartida() {
-        if (!atorNetGames.isConectado()) return false;
-        atorNetGames.iniciarPartida();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return true;
     }
 
     public String getNome() {

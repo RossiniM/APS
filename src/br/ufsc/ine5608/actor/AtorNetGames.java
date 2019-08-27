@@ -1,6 +1,6 @@
-package br.ufsc.ine5608.model;
+package br.ufsc.ine5608.actor;
 
-import br.ufsc.ine5608.controller.MesaControlador;
+import br.ufsc.ine5608.model.Jogador;
 import br.ufsc.inf.leobr.cliente.Jogada;
 import br.ufsc.inf.leobr.cliente.OuvidorProxy;
 import br.ufsc.inf.leobr.cliente.Proxy;
@@ -18,7 +18,7 @@ public class AtorNetGames implements OuvidorProxy {
 
     @Override
     public void iniciarNovaPartida(Integer posicao) {
-        MesaControlador.getInstance().tratarIniciarPartida(posicao);
+        AtorJogador.getInstance().tratarIniciarPartida(posicao);
     }
 
     public void iniciarPartida() {
@@ -29,7 +29,7 @@ public class AtorNetGames implements OuvidorProxy {
         }
     }
 
-    public boolean conectar(AtorJogador jogador) {
+    public boolean conectar(Jogador jogador) {
         try {
             proxy.conectar("localhost", jogador.getNome());
             conectado = true;
@@ -56,7 +56,7 @@ public class AtorNetGames implements OuvidorProxy {
 
     @Override
     public void receberJogada(Jogada jogada) {
-        MesaControlador.getInstance().receberJogada(jogada);
+        AtorJogador.getInstance().receberJogada(jogada);
     }
 
     public void enviarJogada(Jogada jogada) {

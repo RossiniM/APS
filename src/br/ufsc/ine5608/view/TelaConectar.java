@@ -1,6 +1,6 @@
 package br.ufsc.ine5608.view;
 
-import br.ufsc.ine5608.controller.MesaControlador;
+import br.ufsc.ine5608.actor.AtorJogador;
 import br.ufsc.ine5608.shared.Mensagens;
 
 import javax.swing.*;
@@ -65,8 +65,8 @@ public class TelaConectar extends JDialog {
 
         conectarBotao.addActionListener(actionEvent -> {
             try {
-                MesaControlador.getInstance().criaJogador(nomeCampo.getText());
-                if (!MesaControlador.getInstance().conectar())
+                AtorJogador.getInstance().criaJogador(nomeCampo.getText());
+                if (!AtorJogador.getInstance().conectar())
                     throw new Exception(Mensagens.ERRO_CONEXAO);
                 JOptionPane.showMessageDialog(null, Mensagens.CONECTADO, "", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
