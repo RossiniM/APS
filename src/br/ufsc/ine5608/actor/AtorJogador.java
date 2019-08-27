@@ -1,8 +1,8 @@
-package br.ufsc.ine5608.controller;
+package br.ufsc.ine5608.actor;
 
-import br.ufsc.ine5608.model.AtorJogador;
-import br.ufsc.ine5608.model.AtorNetGames;
+import br.ufsc.ine5608.controller.CartasControlador;
 import br.ufsc.ine5608.model.Carta;
+import br.ufsc.ine5608.model.Jogador;
 import br.ufsc.ine5608.model.Operacao;
 import br.ufsc.ine5608.shared.Mensagens;
 import br.ufsc.ine5608.shared.OperadoresEnum;
@@ -10,39 +10,39 @@ import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 import br.ufsc.ine5608.view.TelaPrincipal;
 import br.ufsc.inf.leobr.cliente.Jogada;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 
 import static br.ufsc.ine5608.shared.Constantes.*;
 import static br.ufsc.ine5608.shared.PosicaoTabuleiro.*;
 import static java.util.stream.Collectors.toList;
 
-public class MesaControlador {
+public class AtorJogador {
 
-    private static MesaControlador ourInstance = new MesaControlador();
-
-    public static MesaControlador getInstance() {
-        return ourInstance;
-    }
-
-    public HashMap<Long, Carta> cartaJogadorSelecionada = new HashMap<>();
-    public HashMap<Long, Carta> cartaMesaSelecionada = new HashMap<>();
-    public OperadoresEnum operacao;
-    private CartasControlador cartasControlador = CartasControlador.getInstance();
     private AtorNetGames atorNetGames = new AtorNetGames();
 
-    private AtorJogador jogador;
-    private AtorJogador adversario;
+    private CartasControlador cartasControlador = CartasControlador.getInstance();
+
+    private List<Carta> cartasJogada = new ArrayList<>();
+    public HashMap<Long, Carta> cartasSelecionada = new HashMap<>();
+
+    public OperadoresEnum operacao;
+    private Jogador jogador;
+    private Jogador adversario;
 
     private TelaPrincipal butterFly;
 
-    private boolean conectado = false;
+    private boolean configuracaoPronta = false;
     private boolean primeiraRodada = true;
     private boolean vez = false;
 
-    private MesaControlador() {
+    private static AtorJogador ourInstance = new AtorJogador();
+    public static AtorJogador getInstance() {
+        return ourInstance;
     }
 
     public void inicializa(TelaPrincipal telaPrincipal) {
@@ -50,15 +50,15 @@ public class MesaControlador {
         butterFly.mostra();
     }
 
-    public AtorJogador getJogador() {
+    public Jogador getJogador() {
         return jogador;
     }
 
-    public AtorJogador getAdversario() {
+    public Jogador getAdversario() {
         return adversario;
     }
 
-    public AtorJogador getJogadorNaPosicao(PosicaoTabuleiro posicaoTabuleiro) {
+    public Jogador getJogadorNaPosicao(PosicaoTabuleiro posicaoTabuleiro) {
         return (jogador.getPosicao() == posicaoTabuleiro) ? jogador : adversario;
     }
 
@@ -70,9 +70,9 @@ public class MesaControlador {
 
     public boolean realizarJogada() throws Exception {
         if (ehMinhaVez()) {
-            List<Carta> cartasDaJogada = getCartasDaJogada();
-            if (jogadaEhValida().and(cartasControlador.operacaoEhValida()).test(cartasDaJogada, operacao))
-                return atualizaCartas(cartasDaJogada);
+            atualizaCartasRodada().accept(cartasJogada, jogador.getPosicao());
+            if (jogadaEhValida().and(cartasControlador.operacaoEhValida()).test(cartasJogada, operacao))
+                return atualizaCartas(cartasJogada);
             return false;
         }
         return false;
@@ -82,14 +82,14 @@ public class MesaControlador {
         return vez;
     }
 
-    private List<Carta> getCartasDaJogada() {
-        return cartaJogadorSelecionada.values()
-                .stream()
-                .filter(carta ->
-                        carta.getPosicaoTabuleiro().equals(jogador.getPosicao()) ||
-                                carta.getPosicaoTabuleiro().equals(MESA))
-                .sorted()
-                .collect(toList());
+    BiConsumer<List<Carta>, PosicaoTabuleiro> atualizaCartasRodada() {
+        return (cartasJogada, posicao) -> {
+            cartasJogada.addAll(cartasSelecionada.values()
+                    .stream()
+                    .filter(carta -> carta.getPosicaoTabuleiro().equals(posicao) || carta.getPosicaoTabuleiro().equals(MESA))
+                    .sorted()
+                    .collect(toList()));
+        };
     }
 
     private BiPredicate<List<Carta>, OperadoresEnum> jogadaEhValida() {
@@ -116,14 +116,14 @@ public class MesaControlador {
     }
 
     private boolean atualizaCartas(List<Carta> cartasDaJogada) throws Exception {
-        limpaCartasSelecionadas();
         cartasControlador.atualizarCartas(jogador, cartasDaJogada);
+        limpaCartasSelecionadas();
         return true;
     }
 
     private void limpaCartasSelecionadas() {
-        cartaMesaSelecionada.clear();
-        cartaJogadorSelecionada.clear();
+        cartasSelecionada.clear();
+        cartasJogada.clear();
     }
 
     public void receberJogada(Jogada jogada) {
@@ -140,10 +140,11 @@ public class MesaControlador {
     public void enviaJogada() {
         atorNetGames.enviarJogada(new Operacao(cartasControlador.getCartas(), cartasControlador.getCartasLivres()));
         vez = false;
+        butterFly.recarregaLayout();
     }
 
     public boolean podeIniciarPartida() {
-        return conectado;
+        return configuracaoPronta;
     }
 
     public void iniciarPartida() {
@@ -155,7 +156,7 @@ public class MesaControlador {
             criaJogador(atorNetGames.informarNomeAdversario(jogador.getNome()));
             jogador.setPosicao(PosicaoTabuleiro.values()[posicaoJogador]);
             adversario.setPosicao(getPosicaoOposta(jogador.getPosicao()));
-            conectado = true;
+            configuracaoPronta = true;
             if (jogador.getPosicao().equals(JOGADOR1) && primeiraRodada) {
                 carregaConfiguracaoInicial();
             }
@@ -166,8 +167,8 @@ public class MesaControlador {
 
     public void criaJogador(String nome) throws Exception {
         if (Objects.nonNull(nome) && !nome.isEmpty()) {
-            if (Objects.isNull(jogador)) jogador = new AtorJogador(nome);
-            adversario = new AtorJogador(nome);
+            if (Objects.isNull(jogador)) jogador = new Jogador(nome);
+            adversario = new Jogador(nome);
         } else
             throw new Exception(Mensagens.CAMPO_INVALIDO);
     }

@@ -16,7 +16,6 @@ public class Carta implements Comparable<Carta>, Jogada {
     private Color cor;
 
     public Carta(long id, Long numero, Color cor) {
-
         this.id = id;
         this.numero = numero;
         this.cor = cor;
@@ -47,7 +46,7 @@ public class Carta implements Comparable<Carta>, Jogada {
         if (this.getPosicaoTabuleiro() != MESA && carta.getPosicaoTabuleiro() != MESA)
             return (int) (this.getNumero() - carta.getNumero());
         if (this.getPosicaoTabuleiro() == MESA)
-            return -1;
-        return 1;
+            return 1;
+        return -1;
     }
 }
