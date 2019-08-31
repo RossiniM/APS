@@ -24,7 +24,8 @@ public class CartasControlador {
     public static CartasControlador getInstance() {
         return ourInstance;
     }
-    private Map<Long, Carta> cartas = new HashMap<>();
+
+    private Map<Long, Carta> cartasTotais = new HashMap<>();
     private Map<Long, Carta> cartasLivres = new HashMap<>();
     private final int qtdCartasPorCor = 15;
 
@@ -33,16 +34,16 @@ public class CartasControlador {
     private CartasControlador() {
     }
 
-    public Map<Long, Carta> getCartas() {
-        return cartas;
+    public Map<Long, Carta> getCartasTotais() {
+        return cartasTotais;
     }
 
     public Map<Long, Carta> getCartasLivres() {
         return cartasLivres;
     }
 
-    public void setCartas(Map<Long, Carta> cartas) {
-        this.cartas = cartas;
+    public void setCartasTotais(Map<Long, Carta> cartasTotais) {
+        this.cartasTotais = cartasTotais;
     }
 
     public void setCartasLivres(Map<Long, Carta> cartasLivres) {
@@ -79,8 +80,8 @@ public class CartasControlador {
     }
 
     private void adicionaCartas(Color cor) {
-        long idReferencia = cartas.size();
-        cartas.putAll(Stream.generate(criaCarta(idReferencia, new AtomicLong(1), cor))
+        long idReferencia = cartasTotais.size();
+        cartasTotais.putAll(Stream.generate(criaCarta(idReferencia, new AtomicLong(1), cor))
                 .limit(qtdCartasPorCor)
                 .collect(Collectors.toMap(Carta::getId, carta -> carta)));
     }
@@ -92,7 +93,7 @@ public class CartasControlador {
     }
 
     private boolean verificaPosicaoEstaCheia(PosicaoTabuleiro posicaoTabuleiro, Long qtdCartasMaxima) {
-        return qtdCartasMaxima.equals(cartas.values()
+        return qtdCartasMaxima.equals(cartasTotais.values()
                 .stream()
                 .filter(carta -> carta.getPosicaoTabuleiro().equals(posicaoTabuleiro))
                 .count());
@@ -119,7 +120,7 @@ public class CartasControlador {
     }
 
     private void atualizaCartasLivres() {
-        cartasLivres = cartas.entrySet().stream()
+        cartasLivres = cartasTotais.entrySet().stream()
                 .filter(cartas -> cartas.getValue().getPosicaoTabuleiro().equals(PosicaoTabuleiro.BARALHO))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
@@ -136,14 +137,14 @@ public class CartasControlador {
     private void atualizaCartasJogador(Jogador jogador, Carta cartaJogador) throws Exception {
         if (cartaJogador.getPosicaoTabuleiro().equals(jogador.getPosicao())) {
             cartaJogador.setPosicaoTabuleiro(PosicaoTabuleiro.USADA);
-            cartas.replace(cartaJogador.getId(), cartaJogador);
+            cartasTotais.replace(cartaJogador.getId(), cartaJogador);
         }
     }
 
     private void atualizaCartasMesa(Jogador jogador, Carta cartaMesa) throws Exception {
         if (cartaMesa.getPosicaoTabuleiro().equals(PosicaoTabuleiro.MESA)) {
             cartaMesa.setPosicaoTabuleiro(jogador.getPosicao());
-            cartas.replace(cartaMesa.getId(), cartaMesa);
+            cartasTotais.replace(cartaMesa.getId(), cartaMesa);
         }
     }
 
@@ -151,7 +152,7 @@ public class CartasControlador {
         if (temCartaLivre()) {
             Carta carta = getCartaAleatoriaLivre();
             carta.setPosicaoTabuleiro(posicaoTabuleiro);
-            cartas.replace(carta.getId(),carta);
+            cartasTotais.replace(carta.getId(),carta);
             atualizaCartasLivres();
         } else
             throw new Exception(Mensagens.CARTAS_ESGOTADAS);

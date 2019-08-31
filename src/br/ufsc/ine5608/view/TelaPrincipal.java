@@ -177,7 +177,7 @@ public class TelaPrincipal extends JFrame {
     }
 
     private void carregaCartasTabuleiro() {
-        Collection<Carta> cartas = cartasControlador.getCartas().values();
+        Collection<Carta> cartas = cartasControlador.getCartasTotais().values();
         cartas.forEach(carta -> {
             switch (carta.getPosicaoTabuleiro()) {
                 case MESA:

@@ -10,6 +10,7 @@ import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 import br.ufsc.ine5608.view.TelaPrincipal;
 import br.ufsc.inf.leobr.cliente.Jogada;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,7 @@ public class AtorJogador {
     private Jogador jogador;
     private Jogador adversario;
 
+    private Long tempoInicial = 0L;
     private TelaPrincipal butterFly;
 
     private boolean configuracaoPronta = false;
@@ -41,6 +43,7 @@ public class AtorJogador {
     private boolean vez = false;
 
     private static AtorJogador ourInstance = new AtorJogador();
+
     public static AtorJogador getInstance() {
         return ourInstance;
     }
@@ -131,14 +134,19 @@ public class AtorJogador {
     }
 
     private void tratarRecebimentoJogada(Operacao operacao) {
-        cartasControlador.setCartas(operacao.getCartas());
+        System.out.println("O tempo decorrido do adversario foi " + operacao.getTempoDecorrido().toString());
+        adversario.adicionaTempoJogada(operacao.getTempoDecorrido());
+        tempoInicial = Instant.now().getEpochSecond();
+        cartasControlador.setCartasTotais(operacao.getCartas());
         cartasControlador.setCartasLivres(operacao.getCartasLivres());
         vez = true;
         butterFly.recarregaLayout();
     }
 
     public void enviaJogada() {
-        atorNetGames.enviarJogada(new Operacao(cartasControlador.getCartas(), cartasControlador.getCartasLivres()));
+        long tempoDecorrido = Instant.now().getEpochSecond() - tempoInicial;
+        jogador.adicionaTempoJogada(tempoDecorrido);
+        atorNetGames.enviarJogada(new Operacao(cartasControlador.getCartasTotais(), cartasControlador.getCartasLivres(), tempoDecorrido));
         vez = false;
         butterFly.recarregaLayout();
     }
@@ -176,6 +184,7 @@ public class AtorJogador {
     private void carregaConfiguracaoInicial() throws Exception {
         distribuiCartas();
         butterFly.recarregaLayout();
+        tempoInicial = Instant.now().getEpochSecond();
         this.enviaJogada();
     }
 
