@@ -6,9 +6,7 @@ public class Jogador {
 
     private int pontuacao;
     private String nome;
-    private Long tempoJogadas = 0L;
     private PosicaoTabuleiro posicao;
-    private boolean conectado;
 
     public Jogador(String nome) {
         this.nome = nome;
@@ -26,11 +24,4 @@ public class Jogador {
         return nome;
     }
 
-    public Long getTempoJogadas() {
-        return tempoJogadas;
-    }
-
-    public void adicionaTempoJogada(Long tempo) {
-        this.tempoJogadas += tempo;
-    }
 }

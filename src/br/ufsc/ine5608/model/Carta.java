@@ -1,14 +1,13 @@
 package br.ufsc.ine5608.model;
 
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
-import br.ufsc.inf.leobr.cliente.Jogada;
 
 import java.awt.*;
 
 import static br.ufsc.ine5608.shared.PosicaoTabuleiro.BARALHO;
 import static br.ufsc.ine5608.shared.PosicaoTabuleiro.MESA;
 
-public class Carta implements Comparable<Carta>, Jogada {
+public class Carta implements Comparable<Carta> {
 
     private Long id;
     private Long numero;
