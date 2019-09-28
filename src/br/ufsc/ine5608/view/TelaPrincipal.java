@@ -5,7 +5,7 @@ import br.ufsc.ine5608.model.Carta;
 import br.ufsc.ine5608.model.Jogador;
 import br.ufsc.ine5608.model.Tabuleiro;
 import br.ufsc.ine5608.shared.Mensagens;
-import br.ufsc.ine5608.shared.OperadoresEnum;
+import br.ufsc.ine5608.shared.Operadores;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
 import javax.swing.*;
@@ -264,9 +264,9 @@ public class TelaPrincipal extends JFrame {
     private JPanel criaOperacaoesRadioButton() {
         JPanel operacoes = new JPanel();
         ButtonGroup grupoBotoes = new ButtonGroup();
-        for (OperadoresEnum operadoresEnum : OperadoresEnum.values()) {
-            JRadioButton operacao = new JRadioButton(operadoresEnum.name(), false);
-            operacao.addActionListener(actionEvent -> atorJogador.getTabuleiro().setOperacao(operadoresEnum));
+        for (Operadores operadores : Operadores.values()) {
+            JRadioButton operacao = new JRadioButton(operadores.name(), false);
+            operacao.addActionListener(actionEvent -> atorJogador.getTabuleiro().setOperacao(operadores));
             grupoBotoes.add(operacao);
             operacoes.add(operacao);
         }

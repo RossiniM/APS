@@ -2,7 +2,7 @@ package br.ufsc.ine5608.model;
 
 import br.ufsc.ine5608.actor.AtorNetGames;
 import br.ufsc.ine5608.shared.Mensagens;
-import br.ufsc.ine5608.shared.OperadoresEnum;
+import br.ufsc.ine5608.shared.Operadores;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 import br.ufsc.inf.leobr.cliente.Jogada;
 
@@ -21,7 +21,7 @@ public class Tabuleiro {
     private List<Carta> cartasJogada = new ArrayList<>();
     public HashMap<Long, Carta> cartasSelecionada = new HashMap<>();
 
-    private OperadoresEnum operacao;
+    private Operadores operacao;
     protected Jogador jogador;
     private Jogador adversario;
     private ValidadorDeOperacao validadorOperacaoJogador;
@@ -29,11 +29,11 @@ public class Tabuleiro {
     private boolean configuracaoPronta = false;
     private boolean primeiraRodada = true;
 
-    public OperadoresEnum getOperacao() {
+    public Operadores getOperacao() {
         return operacao;
     }
 
-    public void setOperacao(OperadoresEnum operacao) {
+    public void setOperacao(Operadores operacao) {
         this.operacao = operacao;
     }
 

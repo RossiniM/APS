@@ -1,5 +1,5 @@
 package br.ufsc.ine5608.shared;
 
-public enum OperadoresEnum {
+public enum Operadores {
     SOMA, SUBTRACAO, MULTIPLICACAO, DIVISAO
 }

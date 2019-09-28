@@ -1,23 +1,25 @@
 package br.ufsc.ine5608.model;
 
 import br.ufsc.ine5608.shared.Mensagens;
-import br.ufsc.ine5608.shared.OperadoresEnum;
+import br.ufsc.ine5608.shared.Operadores;
 
 import java.util.List;
 import java.util.function.BiPredicate;
 
-import static br.ufsc.ine5608.shared.Constantes.*;
 import static br.ufsc.ine5608.shared.PosicaoTabuleiro.MESA;
 
 class ValidadorDeOperacao {
 
     private Jogador jogador;
+    private final int PRIMEIRA_CARTA_JOGADOR = 0;
+    private final int SEGUNDA_CARTA_JOGADOR = 1;
+    private final int CARTA_MESA = 2;
 
     ValidadorDeOperacao(Jogador jogador) {
         this.jogador = jogador;
     }
 
-    boolean jogadaEhValida(List<Carta> cartasJogada, OperadoresEnum operacao) throws Exception {
+    boolean jogadaEhValida(List<Carta> cartasJogada, Operadores operacao) throws Exception {
         if (numeroCartasJogadaEhValida(cartasJogada))
             if (corEhValida(cartasJogada.get(PRIMEIRA_CARTA_JOGADOR), cartasJogada.get(SEGUNDA_CARTA_JOGADOR), cartasJogada.get(CARTA_MESA))) {
                 if (operacaoEhValida().test(cartasJogada, operacao))
@@ -40,7 +42,7 @@ class ValidadorDeOperacao {
         throw new Exception(Mensagens.CARTAS_SELECAO_COR_ERRADA);
     }
 
-    private BiPredicate<List<Carta>, OperadoresEnum> operacaoEhValida() {
+    private BiPredicate<List<Carta>, Operadores> operacaoEhValida() {
         return (cartasJogada, operacao) -> {
             Long valorCarta1 = cartasJogada.get(PRIMEIRA_CARTA_JOGADOR).getNumero();
             Long valorCarta2 = cartasJogada.get(SEGUNDA_CARTA_JOGADOR).getNumero();
