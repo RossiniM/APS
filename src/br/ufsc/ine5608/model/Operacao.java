@@ -8,7 +8,6 @@ public class Operacao implements Jogada {
 
     private Map<Long, Carta> cartas;
 
-
     Operacao(Map<Long, Carta> cartas) {
         this.cartas = cartas;
     }

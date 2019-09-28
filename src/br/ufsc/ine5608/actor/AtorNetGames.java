@@ -41,10 +41,6 @@ public class AtorNetGames implements OuvidorProxy {
         return conectado;
     }
 
-    boolean isConectado() {
-        return conectado;
-    }
-
     @Override
     public void finalizarPartidaComErro(String message) {
 

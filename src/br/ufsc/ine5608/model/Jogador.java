@@ -1,6 +1,5 @@
 package br.ufsc.ine5608.model;
 
-import br.ufsc.ine5608.actor.AtorNetGames;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
 public class Jogador {
@@ -10,8 +9,6 @@ public class Jogador {
     private PosicaoTabuleiro posicao;
     private boolean turno;
     private boolean conectado;
-    private AtorNetGames atorNetGames;
-    private Tabuleiro mesaControlador;
 
     public Jogador(String nome) {
         this.nome = nome;

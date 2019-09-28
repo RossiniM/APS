@@ -35,7 +35,6 @@ public class Baralho {
                 .limit(qtdCartasPorCor)
                 .collect(Collectors.toList()));
         Collections.shuffle(listaCarta);
-
     }
 
     private Supplier<Carta> criaCarta(Long idReferencia, AtomicLong numero, Color cor) {
@@ -55,15 +54,11 @@ public class Baralho {
                 .anyMatch(cartas -> cartas.getValue().getPosicaoTabuleiro().equals(PosicaoTabuleiro.BARALHO));
     }
 
-    Map<Long, Carta> getCartas() {
-        return cartas;
-    }
-
     public List<Carta> getListaDeCartas() {
         return new ArrayList<>(cartas.values());
     }
 
-    Carta getCartasLivre() {
+    Carta getCartaLivre() {
         return cartas.values()
                 .stream()
                 .filter(carta -> carta.getPosicaoTabuleiro().equals(PosicaoTabuleiro.BARALHO))
@@ -71,12 +66,16 @@ public class Baralho {
                 .orElseThrow(() -> new NullPointerException(Mensagens.CARTAS_ESGOTADAS));
     }
 
+    void atualizaCarta(Long idCarta, Carta carta) {
+        cartas.replace(idCarta, carta);
+    }
+
     void setCartas(Map<Long, Carta> cartas) {
         this.cartas = cartas;
     }
 
-    void atualizaCarta(Long idCarta, Carta carta) {
-        cartas.replace(idCarta, carta);
+    Map<Long, Carta> getCartas() {
+        return cartas;
     }
 
 }

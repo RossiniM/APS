@@ -70,7 +70,7 @@ public class AtorJogador {
         return tabuleiro.podeIniciarPartida();
     }
 
-    public void inicializa() {
+    public void inicializar() {
         telaPrincipal.mostra();
     }
 }

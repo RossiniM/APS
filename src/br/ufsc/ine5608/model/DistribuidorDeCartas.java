@@ -3,8 +3,8 @@ package br.ufsc.ine5608.model;
 import br.ufsc.ine5608.shared.Mensagens;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.LongStream;
 
@@ -19,19 +19,19 @@ class DistribuidorDeCartas {
         this.baralho = baralho;
     }
 
-    void distribuiCartas(PosicaoTabuleiro posicaoTabuleiro, Long qtdCartasMaxima) {
-        LongStream.rangeClosed(1, qtdCartasMaxima).forEach(it -> distribuiCarta().accept(posicaoTabuleiro));
+    void distribuirCartas(PosicaoTabuleiro posicaoTabuleiro, Long qtdCartasMaxima) {
+        LongStream.rangeClosed(1, qtdCartasMaxima).forEach(it -> distribuirCarta().accept(posicaoTabuleiro));
     }
 
-    private Consumer<PosicaoTabuleiro> distribuiCarta() {
+    private Consumer<PosicaoTabuleiro> distribuirCarta() {
         return posicaoTabuleiro -> {
-            Carta carta = baralho.getCartasLivre();
+            Carta carta = baralho.getCartaLivre();
             carta.setPosicaoTabuleiro(posicaoTabuleiro);
             baralho.atualizaCarta(carta.getId(), carta);
         };
     }
 
-    List<Carta> filtraCartasSelecionadas(HashMap<Long, Carta> cartasSelecionadas, PosicaoTabuleiro posicaoJogador) {
+    List<Carta> filtrarCartasSelecionadas(Map<Long, Carta> cartasSelecionadas, PosicaoTabuleiro posicaoJogador) {
         return cartasSelecionadas.values()
                 .stream()
                 .filter(carta -> carta.getPosicaoTabuleiro().equals(posicaoJogador) || carta.getPosicaoTabuleiro().equals(MESA))
@@ -65,7 +65,7 @@ class DistribuidorDeCartas {
 
     private void adicionaCartaNovaNaPosicao(PosicaoTabuleiro posicaoTabuleiro) throws Exception {
         if (baralho.temCartaLivre()) {
-            Carta carta = baralho.getCartasLivre();
+            Carta carta = baralho.getCartaLivre();
             carta.setPosicaoTabuleiro(posicaoTabuleiro);
             baralho.atualizaCarta(carta.getId(), carta);
         } else
