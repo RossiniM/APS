@@ -1,8 +1,9 @@
 package br.ufsc.ine5608.view;
 
 import br.ufsc.ine5608.actor.AtorJogador;
-import br.ufsc.ine5608.controller.CartasControlador;
 import br.ufsc.ine5608.model.Carta;
+import br.ufsc.ine5608.model.Jogador;
+import br.ufsc.ine5608.model.Tabuleiro;
 import br.ufsc.ine5608.shared.Mensagens;
 import br.ufsc.ine5608.shared.OperadoresEnum;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
@@ -36,27 +37,26 @@ public class TelaPrincipal extends JFrame {
     private Container contentPane;
 
 
-    JPanel cartasJogador1;
-    JPanel cartasJogador2;
-    JPanel cartasMesa;
+    private JPanel cartasJogador1;
+    private JPanel cartasJogador2;
+    private JPanel cartasMesa;
 
-    CartasControlador cartasControlador = CartasControlador.getInstance();
-    AtorJogador mesaControlador = AtorJogador.getInstance();
+    private AtorJogador atorJogador;
 
 
-    public TelaPrincipal(String s) throws HeadlessException {
+    public TelaPrincipal(String s, AtorJogador atorJogador) throws HeadlessException {
         super(s);
+        this.atorJogador = atorJogador;
         inicializa();
-
     }
 
-    public void inicializa() {
+    private void inicializa() {
         criaGUI();
         carregaLayout();
         adicionaListenners();
     }
 
-    public void criaGUI() {
+    private void criaGUI() {
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -64,7 +64,7 @@ public class TelaPrincipal extends JFrame {
     }
 
 
-    public void carregaLayout() {
+    private void carregaLayout() {
 
         contentPane = getContentPane();
         gl = new GroupLayout(contentPane);
@@ -78,7 +78,7 @@ public class TelaPrincipal extends JFrame {
         JPanel placar = criaPlacar();
 
         jogar = new JButton("Jogar");
-        jogar.setEnabled(mesaControlador.ehMinhaVez());
+        jogar.setEnabled(atorJogador.ehMinhaVez());
         board = criaTabuleiro();
         gl.setHorizontalGroup(
                 gl.createParallelGroup()
@@ -121,9 +121,9 @@ public class TelaPrincipal extends JFrame {
         nomeJ1 = new JLabel("");
         nomeJ2 = new JLabel("");
 
-        if (mesaControlador.podeIniciarPartida()) {
-            nomeJ1 = new JLabel(AtorJogador.getInstance().getJogadorNaPosicao(PosicaoTabuleiro.JOGADOR1).getNome());
-            nomeJ2 = new JLabel(AtorJogador.getInstance().getJogadorNaPosicao(PosicaoTabuleiro.JOGADOR2).getNome());
+        if (atorJogador.podeIniciarPartida()) {
+            nomeJ1 = new JLabel(atorJogador.getTabuleiro().getJogadorNaPosicao(PosicaoTabuleiro.JOGADOR1).getNome());
+            nomeJ2 = new JLabel(atorJogador.getTabuleiro().getJogadorNaPosicao(PosicaoTabuleiro.JOGADOR2).getNome());
         }
 
 
@@ -138,7 +138,7 @@ public class TelaPrincipal extends JFrame {
         return mostrador;
     }
 
-    public void criaMenu() {
+    private void criaMenu() {
 
         menuBarra = new JMenuBar();
 
@@ -157,13 +157,13 @@ public class TelaPrincipal extends JFrame {
         menuBarra.add(sobre);
     }
 
-    public JPanel criaTabuleiro() {
+    private JPanel criaTabuleiro() {
 
         JPanel tabuleiro = new JPanel(new BorderLayout());
         cartasJogador1 = new JPanel(new GridLayout(0, 2));
         cartasJogador2 = new JPanel(new GridLayout(0, 2));
         cartasMesa = new JPanel(new GridLayout(0, 3));
-        if (mesaControlador.podeIniciarPartida())
+        if (atorJogador.podeIniciarPartida())
             carregaCartasTabuleiro();
 
         tabuleiro.setBackground(Color.gray);
@@ -177,7 +177,10 @@ public class TelaPrincipal extends JFrame {
     }
 
     private void carregaCartasTabuleiro() {
-        Collection<Carta> cartas = cartasControlador.getCartas().values();
+        Tabuleiro tabuleiro = atorJogador.getTabuleiro();
+        Jogador jogadorPosicao1 = atorJogador.getTabuleiro().getJogadorNaPosicao(JOGADOR1);
+        Jogador jogadorPosicao2 = atorJogador.getTabuleiro().getJogadorNaPosicao(JOGADOR2);
+        Collection<Carta> cartas = tabuleiro.getBaralho().getListaDeCartas();
         cartas.forEach(carta -> {
             switch (carta.getPosicaoTabuleiro()) {
                 case MESA:
@@ -195,11 +198,8 @@ public class TelaPrincipal extends JFrame {
         });
 
         cartasMesa.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Cartas da mesa"));
-        cartasJogador1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), mesaControlador.getJogadorNaPosicao(JOGADOR1).getNome()));
-        cartasJogador2.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), mesaControlador.getJogadorNaPosicao(JOGADOR2).getNome()));
-
-        // cartasJogador1.setEnabled(mesaControlador.getJogadorNaPosicao(JOGADOR1).equals(mesaControlador.getJogador()));
-        // cartasJogador2.setEnabled(mesaControlador.getJogadorNaPosicao(JOGADOR2).equals(mesaControlador.getJogador()));
+        cartasJogador1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), jogadorPosicao1.getNome()));
+        cartasJogador2.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), jogadorPosicao2.getNome()));
     }
 
 
@@ -225,36 +225,31 @@ public class TelaPrincipal extends JFrame {
     }
 
     private void alocaNaPosicao(Carta carta) {
-        mesaControlador.cartasSelecionada.put(carta.getId(), carta);
+        atorJogador.getTabuleiro().cartasSelecionada.put(carta.getId(), carta);
     }
 
     private void removeDaPosicao(Carta carta) {
-        mesaControlador.cartasSelecionada.remove(carta.getId());
+        atorJogador.getTabuleiro().cartasSelecionada.remove(carta.getId());
     }
 
-    public void adicionaListenners() {
+    private void adicionaListenners() {
         conectarItem.addActionListener(
                 actionEvent -> {
-                    new TelaConectar(this, "Conectar", true);
+                    new TelaConectar(this, "Conectar", true, atorJogador);
                     atualizarMenuConectado();
                 }
         );
         iniciarPartidaItem.addActionListener(
-                actionEvent -> {
-                    mesaControlador.iniciarPartida();
-                }
+                actionEvent -> atorJogador.iniciarPartida()
         );
 
         jogar.addActionListener(actionEvent -> {
             try {
-                if (mesaControlador.realizarJogada()) {
-                    JOptionPane.showMessageDialog(null, Mensagens.OPERACAO_SUCESSO, "", JOptionPane.INFORMATION_MESSAGE);
-                    recarregaLayout();
-                } else
-                    JOptionPane.showMessageDialog(null, Mensagens.OPERACAO_ERRADA, "", JOptionPane.WARNING_MESSAGE);
-                mesaControlador.enviaJogada();
+                atorJogador.jogar();
+                JOptionPane.showMessageDialog(null, Mensagens.OPERACAO_SUCESSO, "", JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e.getMessage(), "", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, e.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+                atorJogador.enviarJogada();
             }
         });
     }
@@ -271,7 +266,7 @@ public class TelaPrincipal extends JFrame {
         ButtonGroup grupoBotoes = new ButtonGroup();
         for (OperadoresEnum operadoresEnum : OperadoresEnum.values()) {
             JRadioButton operacao = new JRadioButton(operadoresEnum.name(), false);
-            operacao.addActionListener(actionEvent -> mesaControlador.operacao = operadoresEnum);
+            operacao.addActionListener(actionEvent -> atorJogador.getTabuleiro().setOperacao(operadoresEnum));
             grupoBotoes.add(operacao);
             operacoes.add(operacao);
         }

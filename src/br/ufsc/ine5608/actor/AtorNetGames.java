@@ -9,16 +9,18 @@ import br.ufsc.inf.leobr.cliente.exception.*;
 public class AtorNetGames implements OuvidorProxy {
 
     private Proxy proxy;
+    private AtorJogador atorJogador;
     private boolean conectado = false;
 
-    public AtorNetGames() {
+    AtorNetGames(AtorJogador atorJogador) {
+        this.atorJogador = atorJogador;
         proxy = Proxy.getInstance();
         proxy.addOuvinte(this);
     }
 
     @Override
     public void iniciarNovaPartida(Integer posicao) {
-        AtorJogador.getInstance().tratarIniciarPartida(posicao);
+        atorJogador.tratarInicioPartida(posicao);
     }
 
     public void iniciarPartida() {
@@ -56,10 +58,10 @@ public class AtorNetGames implements OuvidorProxy {
 
     @Override
     public void receberJogada(Jogada jogada) {
-        AtorJogador.getInstance().receberJogada(jogada);
+        atorJogador.receberJogada(jogada);
     }
 
-    public void enviarJogada(Jogada jogada) {
+    void enviarJogada(Jogada jogada) {
         try {
             proxy.enviaJogada(jogada);
         } catch (NaoJogandoException e) {

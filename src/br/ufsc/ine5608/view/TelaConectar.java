@@ -6,16 +6,18 @@ import br.ufsc.ine5608.shared.Mensagens;
 import javax.swing.*;
 import java.awt.*;
 
-public class TelaConectar extends JDialog {
+class TelaConectar extends JDialog {
 
 
     private JLabel nomeLabel;
     private JTextField nomeCampo;
     private JButton conectarBotao;
     private JButton cancelarBotao;
+    private AtorJogador atorJogador;
 
-    public TelaConectar(Frame frame, String title, boolean modal) {
+    TelaConectar(Frame frame, String title, boolean modal, AtorJogador atorJogador) {
         super(frame, title, modal);
+        this.atorJogador = atorJogador;
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         inicializaForm();
@@ -65,8 +67,8 @@ public class TelaConectar extends JDialog {
 
         conectarBotao.addActionListener(actionEvent -> {
             try {
-                AtorJogador.getInstance().criaJogador(nomeCampo.getText());
-                if (!AtorJogador.getInstance().conectar())
+                atorJogador.getTabuleiro().criaJogador(nomeCampo.getText());
+                if (!atorJogador.conectar())
                     throw new Exception(Mensagens.ERRO_CONEXAO);
                 JOptionPane.showMessageDialog(null, Mensagens.CONECTADO, "", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
