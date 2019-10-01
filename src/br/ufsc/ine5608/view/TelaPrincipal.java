@@ -17,25 +17,11 @@ import static br.ufsc.ine5608.shared.PosicaoTabuleiro.*;
 public class TelaPrincipal extends JFrame {
 
     private JMenuBar menuBarra;
-    private JMenu menu;
-    private JMenu sobre;
     private JMenuItem conectarItem;
     private JMenuItem iniciarPartidaItem;
     private JMenuItem desconectarItem;
-    private JMenuItem sobreItem;
-    private JPanel board;
-    private JPanel boardAtualizado;
-    private JLabel labelNome;
-    private JLabel nomeJ1;
-    private JLabel nomeJ2;
-    private JLabel labelpontos;
-    private JLabel pontosJ1;
-    private JLabel pontosJ2;
-    private JButton jogar;
-    private JPanel operacoes = new JPanel();
-    private GroupLayout gl;
+    private JButton jogarBotao;
     private Container contentPane;
-
 
     private JPanel cartasJogador1;
     private JPanel cartasJogador2;
@@ -53,7 +39,7 @@ public class TelaPrincipal extends JFrame {
     private void inicializa() {
         criaGUI();
         carregaLayout();
-        adicionaListenners();
+        adicionaListeners();
     }
 
     private void criaGUI() {
@@ -67,19 +53,19 @@ public class TelaPrincipal extends JFrame {
     private void carregaLayout() {
 
         contentPane = getContentPane();
-        gl = new GroupLayout(contentPane);
+        GroupLayout gl = new GroupLayout(contentPane);
         contentPane.setLayout(gl);
 
         gl.setAutoCreateContainerGaps(true);
         gl.setAutoCreateGaps(true);
 
         criaMenu();
-        operacoes = criaOperacaoesRadioButton();
+        JPanel operacoes = criaOperacaoesRadioButton();
         JPanel placar = criaPlacar();
 
-        jogar = new JButton("Jogar");
-        jogar.setEnabled(atorJogador.ehMinhaVez());
-        board = criaTabuleiro();
+        jogarBotao = new JButton("Jogar");
+        jogarBotao.setEnabled(atorJogador.ehMinhaVez());
+        JPanel board = criaTabuleiro();
         gl.setHorizontalGroup(
                 gl.createParallelGroup()
                         .addGroup(
@@ -90,7 +76,7 @@ public class TelaPrincipal extends JFrame {
                         .addGroup(
                                 gl.createSequentialGroup()
                                         .addComponent(operacoes)
-                                        .addComponent(jogar)
+                                        .addComponent(jogarBotao)
                         )
                         .addComponent(board, 0, 700, 900));
         gl.setVerticalGroup(
@@ -103,7 +89,7 @@ public class TelaPrincipal extends JFrame {
                         .addGroup(
                                 gl.createParallelGroup()
                                         .addComponent(operacoes)
-                                        .addComponent(jogar)
+                                        .addComponent(jogarBotao)
                         )
                         .addComponent(board, 0, 600, 780));
         pack();
@@ -112,14 +98,14 @@ public class TelaPrincipal extends JFrame {
     private JPanel criaPlacar() {
         JPanel mostrador = new JPanel(new GridLayout(0, 3));
 
-        labelNome = new JLabel("Nome:");
+        JLabel labelNome = new JLabel("Nome:");
 
-        labelpontos = new JLabel("Pontos: ");
-        pontosJ1 = new JLabel("10");
-        pontosJ2 = new JLabel("10");
+        JLabel labelpontos = new JLabel("Pontos: ");
+        JLabel pontosJ1 = new JLabel("10");
+        JLabel pontosJ2 = new JLabel("10");
 
-        nomeJ1 = new JLabel("");
-        nomeJ2 = new JLabel("");
+        JLabel nomeJ1 = new JLabel("");
+        JLabel nomeJ2 = new JLabel("");
 
         if (atorJogador.podeIniciarPartida()) {
             nomeJ1 = new JLabel(atorJogador.getTabuleiro().getJogadorNaPosicao(PosicaoTabuleiro.JOGADOR1).getNome());
@@ -142,12 +128,12 @@ public class TelaPrincipal extends JFrame {
 
         menuBarra = new JMenuBar();
 
-        menu = new JMenu("Jogo");
-        sobre = new JMenu("Sobre");
+        JMenu menu = new JMenu("Jogo");
+        JMenu sobre = new JMenu("Sobre");
         conectarItem = new JMenuItem("Conectar");
         iniciarPartidaItem = new JMenuItem("Iniciar Partida");
         desconectarItem = new JMenuItem("Desconectar");
-        sobreItem = new JMenuItem("Sobre");
+        JMenuItem sobreItem = new JMenuItem("Sobre");
         menu.add(conectarItem);
         menu.add(iniciarPartidaItem);
         menu.add(desconectarItem);
@@ -232,7 +218,7 @@ public class TelaPrincipal extends JFrame {
         atorJogador.getTabuleiro().cartasSelecionada.remove(carta.getId());
     }
 
-    private void adicionaListenners() {
+    private void adicionaListeners() {
         conectarItem.addActionListener(
                 actionEvent -> {
                     new TelaConectar(this, "Conectar", true, atorJogador);
@@ -243,7 +229,7 @@ public class TelaPrincipal extends JFrame {
                 actionEvent -> atorJogador.iniciarPartida()
         );
 
-        jogar.addActionListener(actionEvent -> {
+        jogarBotao.addActionListener(actionEvent -> {
             try {
                 atorJogador.jogar();
                 JOptionPane.showMessageDialog(null, Mensagens.OPERACAO_SUCESSO, "", JOptionPane.INFORMATION_MESSAGE);
@@ -258,7 +244,7 @@ public class TelaPrincipal extends JFrame {
         contentPane.removeAll();
         contentPane = null;
         carregaLayout();
-        adicionaListenners();
+        adicionaListeners();
     }
 
     private JPanel criaOperacaoesRadioButton() {

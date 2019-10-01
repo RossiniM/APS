@@ -9,7 +9,6 @@ import java.awt.*;
 class TelaConectar extends JDialog {
 
 
-    private JLabel nomeLabel;
     private JTextField nomeCampo;
     private JButton conectarBotao;
     private JButton cancelarBotao;
@@ -35,7 +34,7 @@ class TelaConectar extends JDialog {
         GroupLayout layout = new GroupLayout(panel);
         panel.setLayout(layout);
 
-        nomeLabel = new JLabel("Nome:");
+        JLabel nomeLabel = new JLabel("Nome:");
         nomeCampo = new JTextField();
         conectarBotao = new JButton("Conectar");
         cancelarBotao = new JButton("Cancelar");
