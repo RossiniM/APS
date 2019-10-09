@@ -6,6 +6,7 @@ import br.ufsc.ine5608.view.TelaPrincipal;
 public class Main {
 
     public static void main(String[] args) {
+       //Tela principal
         AtorJogador atorJogador = AtorJogador.getInstance();
         TelaPrincipal telaPrincipal = new TelaPrincipal("ButterFLy");
         atorJogador.inicializa(telaPrincipal);
