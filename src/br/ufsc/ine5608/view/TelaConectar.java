@@ -69,12 +69,16 @@ class TelaConectar extends JDialog {
                 atorJogador.getTabuleiro().criaJogador(nomeCampo.getText());
                 if (!atorJogador.conectar())
                     throw new Exception(Mensagens.ERRO_CONEXAO);
-                JOptionPane.showMessageDialog(null, Mensagens.CONECTADO, "", JOptionPane.INFORMATION_MESSAGE);
+                mostraMensagem(Mensagens.CONECTADO,JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e.getMessage(), "", JOptionPane.ERROR_MESSAGE);
+                mostraMensagem(e.getMessage(),JOptionPane.ERROR_MESSAGE);
             }
         });
         cancelarBotao.addActionListener(actionEvent -> dispose());
+    }
+
+    private void mostraMensagem(String mensagem,int tipoMensagem){
+        JOptionPane.showMessageDialog(null, mensagem, "", tipoMensagem);
     }
 }
