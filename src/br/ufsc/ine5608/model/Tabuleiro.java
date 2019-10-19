@@ -24,7 +24,7 @@ public class Tabuleiro {
     private OperadorMatematico operador;
     protected Jogador jogador;
     private Jogador adversario;
-    private ValidadorDeOperacao validadorOperacaoJogador;
+    private ValidadorDeOperacao validadorOperacao;
     private int pontuacaoMaxima;
     private PartidaStatus status = NAO_INICIADA;
 
@@ -46,10 +46,6 @@ public class Tabuleiro {
         return jogador;
     }
 
-    public Jogador getAdversario() {
-        return adversario;
-    }
-
     public Baralho getBaralho() {
         return baralho;
     }
@@ -69,7 +65,7 @@ public class Tabuleiro {
 
     public void realizarJogada() throws Exception {
         cartasJogada = distribuidorDeCartas.filtrarCartasSelecionadas(cartasSelecionada, jogador.getPosicao());
-        if (validadorOperacaoJogador.jogadaEhValida(cartasJogada, operador))
+        if (validadorOperacao.jogadaEhValida(cartasJogada, operador))
             distribuidorDeCartas.atualizarCartas(jogador, cartasJogada);
     }
 
@@ -109,7 +105,7 @@ public class Tabuleiro {
             criaJogador(atorNetGames.informarNomeAdversario(jogador.getNome()));
             jogador.setPosicao(PosicaoTabuleiro.values()[posicaoJogador]);
             adversario.setPosicao(getPosicaoAdversario(jogador));
-            validadorOperacaoJogador = new ValidadorDeOperacao(jogador);
+            validadorOperacao = new ValidadorDeOperacao(jogador);
             if (jogador.getPosicao().equals(JOGADOR1) && status.equals(NAO_INICIADA)) {
                 carregaConfiguracaoInicial();
                 new TelaConfiguracao(null, "Configuracao Partida", true, this);

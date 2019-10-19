@@ -7,8 +7,6 @@ public class Jogador {
     private int pontuacao = 0;
     private String nome;
     private PosicaoTabuleiro posicao;
-    private boolean turno;
-    private boolean conectado;
 
     public Jogador(String nome) {
         this.nome = nome;
@@ -18,7 +16,7 @@ public class Jogador {
         return pontuacao;
     }
 
-    public void setPontuacao(int pontuacao) {
+    void setPontuacao(int pontuacao) {
         this.pontuacao = pontuacao;
     }
 
@@ -32,9 +30,5 @@ public class Jogador {
 
     public String getNome() {
         return nome;
-    }
-
-    public void setConectado(boolean status) {
-        conectado = status;
     }
 }

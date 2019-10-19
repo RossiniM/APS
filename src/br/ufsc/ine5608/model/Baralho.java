@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 public class Baralho {
 
     private Map<Long, Carta> cartas = new LinkedHashMap<>();
-    private final int qtdCartasPorCor = 15;
+    private final int qtdCartasPorCor = 20;
 
     private final List<Color> cores = Arrays.asList(Color.red, Color.black);
 

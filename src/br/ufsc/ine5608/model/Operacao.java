@@ -17,7 +17,7 @@ public class Operacao implements Jogada {
         this.pontuacaoMax = pontuacaoMax;
     }
 
-    public int getPontuacaoAdversario() {
+    int getPontuacaoAdversario() {
         return pontuacaoAdversario;
     }
 
