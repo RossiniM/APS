@@ -1,6 +1,7 @@
 package br.ufsc.ine5608.view;
 
 import br.ufsc.ine5608.actor.AtorJogador;
+import br.ufsc.ine5608.model.Tabuleiro;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,12 +9,13 @@ import java.awt.*;
 public class TelaConfiguracao extends JDialog {
 
     private JButton confirmarBotao;
-    private AtorJogador atorJogador;
+    private Tabuleiro tabuleiro;
 
-    public TelaConfiguracao(Frame frame, String title, boolean modal) {
+    public TelaConfiguracao(Frame frame, String title, boolean modal, Tabuleiro tabuleiro) {
         super(frame, title, modal);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        this.tabuleiro = tabuleiro;
         inicializaForm();
     }
 
@@ -56,7 +58,7 @@ public class TelaConfiguracao extends JDialog {
     }
 
     private void addListeners() {
-
+        confirmarBotao.addActionListener(actionEvent -> this.dispose());
     }
 
     private void mostraMensagem(String mensagem, int tipoMensagem) {
@@ -69,7 +71,11 @@ public class TelaConfiguracao extends JDialog {
         ButtonGroup grupoBotoes = new ButtonGroup();
         for (int i = 10;i<=20;i+=5) {
             JRadioButton operacao = new JRadioButton(Integer.toString(i), false);
-//            operacao.addActionListener(actionEvent -> atorJogador.getTabuleiro().setOperador(operadores));
+            int finalI = i;
+            operacao.addActionListener(actionEvent -> {
+                tabuleiro.setPontuacaoMaxima(finalI);
+                System.out.println(tabuleiro.getPontuacaoMaxima());
+            });
             grupoBotoes.add(operacao);
             operacoes.add(operacao);
         }

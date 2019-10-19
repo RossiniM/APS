@@ -4,7 +4,7 @@ import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
 public class Jogador {
 
-    private int pontuacao;
+    private int pontuacao = 0;
     private String nome;
     private PosicaoTabuleiro posicao;
     private boolean turno;
@@ -12,6 +12,14 @@ public class Jogador {
 
     public Jogador(String nome) {
         this.nome = nome;
+    }
+
+    public int getPontuacao() {
+        return pontuacao;
+    }
+
+    public void setPontuacao(int pontuacao) {
+        this.pontuacao = pontuacao;
     }
 
     public PosicaoTabuleiro getPosicao() {

@@ -101,17 +101,22 @@ public class TelaPrincipal extends JFrame {
         JLabel labelNome = new JLabel("Nome:");
 
         JLabel labelpontos = new JLabel("Pontos: ");
-        JLabel pontosJ1 = new JLabel("10");
-        JLabel pontosJ2 = new JLabel("10");
+        JLabel pontosJ1 = new JLabel("0");
+        JLabel pontosJ2 = new JLabel("0");
 
         JLabel nomeJ1 = new JLabel("");
         JLabel nomeJ2 = new JLabel("");
 
+        JLabel labelPontMaxima = new JLabel("Pontuacao Maxima");
+        JLabel pontMaxima = new JLabel("");
+
         if (atorJogador.podeIniciarPartida()) {
             nomeJ1 = new JLabel(atorJogador.getTabuleiro().getJogadorNaPosicao(PosicaoTabuleiro.JOGADOR1).getNome());
             nomeJ2 = new JLabel(atorJogador.getTabuleiro().getJogadorNaPosicao(PosicaoTabuleiro.JOGADOR2).getNome());
+            pontMaxima = new JLabel(Integer.toString(atorJogador.getTabuleiro().getPontuacaoMaxima()));
+            pontosJ1 = new JLabel(Integer.toString(atorJogador.getTabuleiro().getJogadorNaPosicao(PosicaoTabuleiro.JOGADOR1).getPontuacao()));
+            pontosJ2 = new JLabel(Integer.toString(atorJogador.getTabuleiro().getJogadorNaPosicao(PosicaoTabuleiro.JOGADOR2).getPontuacao()));
         }
-
 
         mostrador.add(labelNome);
         mostrador.add(nomeJ1);
@@ -120,6 +125,9 @@ public class TelaPrincipal extends JFrame {
         mostrador.add(labelpontos);
         mostrador.add(pontosJ1);
         mostrador.add(pontosJ2);
+        mostrador.add(labelPontMaxima);
+        mostrador.add(pontMaxima);
+
         mostrador.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLoweredSoftBevelBorder(), "Jogadores"));
         return mostrador;
     }

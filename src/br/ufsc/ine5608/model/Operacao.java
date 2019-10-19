@@ -8,8 +8,21 @@ public class Operacao implements Jogada {
 
     private Map<Long, Carta> cartas;
 
-    Operacao(Map<Long, Carta> cartas) {
+    private int pontuacaoAdversario;
+    private int pontuacaoMax;
+
+    Operacao(Map<Long, Carta> cartas, int pontuacaoAdversario, int pontuacaoMax) {
         this.cartas = cartas;
+        this.pontuacaoAdversario = pontuacaoAdversario;
+        this.pontuacaoMax = pontuacaoMax;
+    }
+
+    public int getPontuacaoAdversario() {
+        return pontuacaoAdversario;
+    }
+
+    int getPontuacaoMax() {
+        return pontuacaoMax;
     }
 
     Map<Long, Carta> getCartas() {

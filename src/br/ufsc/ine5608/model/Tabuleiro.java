@@ -4,6 +4,7 @@ import br.ufsc.ine5608.actor.AtorNetGames;
 import br.ufsc.ine5608.shared.Mensagens;
 import br.ufsc.ine5608.shared.OperadorMatematico;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
+import br.ufsc.ine5608.view.TelaConfiguracao;
 import br.ufsc.inf.leobr.cliente.Jogada;
 
 import java.util.*;
@@ -22,7 +23,7 @@ public class Tabuleiro {
     protected Jogador jogador;
     private Jogador adversario;
     private ValidadorDeOperacao validadorOperacaoJogador;
-
+    private int pontuacaoMaxima;
     private boolean configuracaoPronta = false;
     private boolean primeiraRodada = true;
 
@@ -48,13 +49,21 @@ public class Tabuleiro {
         return (jogador.getPosicao() == posicaoTabuleiro) ? jogador : adversario;
     }
 
-    public void realizarJogada() throws Exception {
-        if (ehMinhaVez()) {
-            cartasJogada = distribuidorDeCartas.filtrarCartasSelecionadas(cartasSelecionada, jogador.getPosicao());
-            if (validadorOperacaoJogador.jogadaEhValida(cartasJogada, operador))
-                distribuidorDeCartas.atualizarCartas(jogador, cartasJogada);
-        }
+    public int getPontuacaoMaxima() {
+        return pontuacaoMaxima;
     }
+
+    public void setPontuacaoMaxima(int pontuacaoMaxima) {
+        this.pontuacaoMaxima = pontuacaoMaxima;
+    }
+
+
+    public void realizarJogada() throws Exception {
+        cartasJogada = distribuidorDeCartas.filtrarCartasSelecionadas(cartasSelecionada, jogador.getPosicao());
+        if (validadorOperacaoJogador.jogadaEhValida(cartasJogada, operador))
+            distribuidorDeCartas.atualizarCartas(jogador, cartasJogada);
+    }
+
 
     public boolean ehMinhaVez() {
         return vez;
@@ -68,13 +77,15 @@ public class Tabuleiro {
 
     public void tratarRecebimentoJogada(Operacao operacao) {
         baralho.setCartas(operacao.getCartas());
+        pontuacaoMaxima = operacao.getPontuacaoMax();
+        adversario.setPontuacao(operacao.getPontuacaoAdversario());
         limpaCartasSelecionadas();
         vez = true;
     }
 
     public Jogada criarJogada() {
         desabilitaJogador();
-        return new Operacao(baralho.getCartas());
+        return new Operacao(baralho.getCartas(), jogador.getPontuacao(), pontuacaoMaxima);
     }
 
     private void desabilitaJogador() {
@@ -94,8 +105,10 @@ public class Tabuleiro {
             validadorOperacaoJogador = new ValidadorDeOperacao(jogador);
             if (jogador.getPosicao().equals(JOGADOR1) && primeiraRodada) {
                 carregaConfiguracaoInicial();
+                new TelaConfiguracao(null, "Configuracao Partida", true, this);
             }
             primeiraRodada = false;
+
         } catch (Exception e) {
             e.printStackTrace();
         }

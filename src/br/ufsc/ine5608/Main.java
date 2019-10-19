@@ -6,6 +6,5 @@ public class Main {
 
     public static void main(String[] args) {
         AtorJogador atorJogador = new AtorJogador();
-        atorJogador.inicializar();
-    }
+        atorJogador.inicializar();    }
 }

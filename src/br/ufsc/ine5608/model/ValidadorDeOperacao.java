@@ -22,12 +22,32 @@ class ValidadorDeOperacao {
     boolean jogadaEhValida(List<Carta> cartasJogada, OperadorMatematico operacao) throws Exception {
         if (numeroCartasJogadaEhValida(cartasJogada))
             if (corEhValida(cartasJogada.get(PRIMEIRA_CARTA_JOGADOR), cartasJogada.get(SEGUNDA_CARTA_JOGADOR), cartasJogada.get(CARTA_MESA))) {
-                if (operacaoEhValida().test(cartasJogada, operacao))
+                if (operacaoEhValida().test(cartasJogada, operacao)) {
+                    atualizaPontuacao(operacao);
                     return true;
+                }
                 throw new Exception(Mensagens.OPERACAO_ERRADA);
             }
 
         throw new Exception(Mensagens.CARTAS_SELECAO_NUMERO_ERRADA);
+    }
+
+    private void atualizaPontuacao(OperadorMatematico operacao) {
+
+        switch (operacao) {
+            case MULTIPLICACAO:
+                incrementaPontuacao(2);
+                break;
+            case DIVISAO:
+                incrementaPontuacao(3);
+                break;
+            default:
+                incrementaPontuacao(1);
+        }
+    }
+
+    private void incrementaPontuacao(int pontuacao) {
+        jogador.setPontuacao(jogador.getPontuacao() + pontuacao);
     }
 
     private boolean numeroCartasJogadaEhValida(List<Carta> cartasJogada) {
