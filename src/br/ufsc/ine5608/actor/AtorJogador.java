@@ -1,23 +1,35 @@
 package br.ufsc.ine5608.actor;
 
-import br.ufsc.ine5608.model.Jogador;
 import br.ufsc.ine5608.model.Operacao;
 import br.ufsc.ine5608.model.Tabuleiro;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 import br.ufsc.ine5608.view.TelaPrincipal;
 import br.ufsc.inf.leobr.cliente.Jogada;
 
+import javax.swing.*;
 import java.util.Objects;
+
+import static br.ufsc.ine5608.shared.Mensagens.SUCESSO_DESCONEXAO;
+import static br.ufsc.ine5608.shared.Mensagens.mostraMensagem;
 
 public class AtorJogador {
     private AtorNetGames rede;
     private Tabuleiro tabuleiro;
     private TelaPrincipal telaPrincipal;
+    private Boolean conectado = false;
 
     public AtorJogador() {
         this.rede = new AtorNetGames(this);
         this.tabuleiro = new Tabuleiro();
         this.telaPrincipal = new TelaPrincipal("ButterFly", this);
+    }
+
+    public Boolean isConectado() {
+        return conectado;
+    }
+
+    public void setConectado(Boolean conectado) {
+        this.conectado = conectado;
     }
 
     public Tabuleiro getTabuleiro() {
@@ -26,15 +38,19 @@ public class AtorJogador {
 
     public boolean conectar() {
         if (Objects.nonNull(tabuleiro.getJogador()))
-            return rede.conectar(tabuleiro.getJogador());
-        return false;
+            if (rede.conectar(tabuleiro.getJogador()))
+                conectado = true;
+        return conectado;
     }
 
-    public boolean desconectar() {
-        Jogador jogador = tabuleiro.getJogador();
-        if (Objects.nonNull(jogador))
-            return rede.conectar(jogador);
-        return false;
+    public void desconectar() {
+        if (conectado) {
+            rede.desconectar();
+            tabuleiro.desconectar();
+            mostraMensagem(SUCESSO_DESCONEXAO, JOptionPane.INFORMATION_MESSAGE);
+            conectado = false;
+            telaPrincipal.recarregaLayout();
+        }
     }
 
     public void jogar() throws Exception {
@@ -66,8 +82,8 @@ public class AtorJogador {
         return tabuleiro.ehMinhaVez();
     }
 
-    public boolean podeIniciarPartida() {
-        return tabuleiro.podeIniciarPartida();
+    public boolean configuracaoPronta() {
+        return tabuleiro.configuracaoPronta();
     }
 
     public void inicializar() {

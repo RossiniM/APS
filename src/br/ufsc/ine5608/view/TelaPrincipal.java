@@ -12,6 +12,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Collection;
 
+import static br.ufsc.ine5608.shared.Mensagens.mostraMensagem;
 import static br.ufsc.ine5608.shared.PosicaoTabuleiro.*;
 
 public class TelaPrincipal extends JFrame {
@@ -110,7 +111,7 @@ public class TelaPrincipal extends JFrame {
         JLabel labelPontMaxima = new JLabel("Pontuacao Maxima");
         JLabel pontMaxima = new JLabel("");
 
-        if (atorJogador.podeIniciarPartida()) {
+        if (atorJogador.configuracaoPronta()) {
             nomeJ1 = new JLabel(atorJogador.getTabuleiro().getJogadorNaPosicao(PosicaoTabuleiro.JOGADOR1).getNome());
             nomeJ2 = new JLabel(atorJogador.getTabuleiro().getJogadorNaPosicao(PosicaoTabuleiro.JOGADOR2).getNome());
             pontMaxima = new JLabel(Integer.toString(atorJogador.getTabuleiro().getPontuacaoMaxima()));
@@ -146,7 +147,6 @@ public class TelaPrincipal extends JFrame {
         menu.add(iniciarPartidaItem);
         menu.add(desconectarItem);
         sobre.add(sobreItem);
-        atualizarMenuDesconectado();
         menuBarra.add(menu);
         menuBarra.add(sobre);
     }
@@ -157,7 +157,7 @@ public class TelaPrincipal extends JFrame {
         cartasJogador1 = new JPanel(new GridLayout(0, 2));
         cartasJogador2 = new JPanel(new GridLayout(0, 2));
         cartasMesa = new JPanel(new GridLayout(0, 3));
-        if (atorJogador.podeIniciarPartida())
+        if (atorJogador.configuracaoPronta())
             carregaCartasTabuleiro();
 
         tabuleiro.setBackground(Color.gray);
@@ -229,14 +229,28 @@ public class TelaPrincipal extends JFrame {
     private void adicionaListeners() {
         conectarItem.addActionListener(
                 actionEvent -> {
-                    new TelaConectar(this, "Conectar", true, atorJogador);
-                    atualizarMenuConectado();
+                    if (!atorJogador.isConectado())
+                        new TelaConectar(this, "Conectar", true, atorJogador);
+                    else
+                        mostraMensagem(Mensagens.INFO_CONEXAO_PRONTA, JOptionPane.INFORMATION_MESSAGE);
                 }
         );
-        iniciarPartidaItem.addActionListener(
-                actionEvent -> atorJogador.iniciarPartida()
+        iniciarPartidaItem.addActionListener(actionEvent -> {
+                    if (atorJogador.isConectado() && atorJogador.getTabuleiro().getStatus().ordinal() < 2) {
+                        atorJogador.iniciarPartida();
+                    } else {
+                        mostraMensagem(Mensagens.INFO_CONEXAO_NECESSARIA, JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
         );
 
+        desconectarItem.addActionListener(actionEvent -> {
+            if (atorJogador.isConectado()) {
+                atorJogador.desconectar();
+            } else {
+                mostraMensagem(Mensagens.INFO_DESCONEXAO_PRONTA, JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
         jogarBotao.addActionListener(actionEvent -> {
             try {
                 atorJogador.jogar();
@@ -266,24 +280,6 @@ public class TelaPrincipal extends JFrame {
         }
         return operacoes;
     }
-
-
-    private void atualizarMenuConectado() {
-        //todo colocar condicao de conectado
-        conectarItem.setEnabled(false);
-        iniciarPartidaItem.setEnabled(true);
-        desconectarItem.setEnabled(true);
-    }
-
-
-    private void atualizarMenuDesconectado() {
-        //todo colocar condicao de desconectado
-
-        conectarItem.setEnabled(true);
-        iniciarPartidaItem.setEnabled(false);
-        desconectarItem.setEnabled(false);
-    }
-
 
     public void mostra() {
         setVisible(true);

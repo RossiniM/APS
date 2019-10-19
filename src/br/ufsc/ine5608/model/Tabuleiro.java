@@ -3,12 +3,14 @@ package br.ufsc.ine5608.model;
 import br.ufsc.ine5608.actor.AtorNetGames;
 import br.ufsc.ine5608.shared.Mensagens;
 import br.ufsc.ine5608.shared.OperadorMatematico;
+import br.ufsc.ine5608.shared.PartidaStatus;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 import br.ufsc.ine5608.view.TelaConfiguracao;
 import br.ufsc.inf.leobr.cliente.Jogada;
 
 import java.util.*;
 
+import static br.ufsc.ine5608.shared.PartidaStatus.*;
 import static br.ufsc.ine5608.shared.PosicaoTabuleiro.*;
 
 public class Tabuleiro {
@@ -24,11 +26,18 @@ public class Tabuleiro {
     private Jogador adversario;
     private ValidadorDeOperacao validadorOperacaoJogador;
     private int pontuacaoMaxima;
-    private boolean configuracaoPronta = false;
-    private boolean primeiraRodada = true;
+    private PartidaStatus status = NAO_INICIADA;
 
     public void setOperador(OperadorMatematico operador) {
         this.operador = operador;
+    }
+
+    public PartidaStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(PartidaStatus status) {
+        this.status = status;
     }
 
     private boolean vez = false;
@@ -64,11 +73,9 @@ public class Tabuleiro {
             distribuidorDeCartas.atualizarCartas(jogador, cartasJogada);
     }
 
-
     public boolean ehMinhaVez() {
         return vez;
     }
-
 
     private void limpaCartasSelecionadas() {
         cartasSelecionada.clear();
@@ -76,6 +83,7 @@ public class Tabuleiro {
     }
 
     public void tratarRecebimentoJogada(Operacao operacao) {
+        status = ANDAMENTO;
         baralho.setCartas(operacao.getCartas());
         pontuacaoMaxima = operacao.getPontuacaoMax();
         adversario.setPontuacao(operacao.getPontuacaoAdversario());
@@ -92,8 +100,8 @@ public class Tabuleiro {
         vez = false;
     }
 
-    public boolean podeIniciarPartida() {
-        return configuracaoPronta;
+    public boolean configuracaoPronta() {
+        return status != NAO_INICIADA;
     }
 
     public void tratarIniciarPartida(Integer posicaoJogador, AtorNetGames atorNetGames) {
@@ -101,14 +109,12 @@ public class Tabuleiro {
             criaJogador(atorNetGames.informarNomeAdversario(jogador.getNome()));
             jogador.setPosicao(PosicaoTabuleiro.values()[posicaoJogador]);
             adversario.setPosicao(getPosicaoAdversario(jogador));
-            configuracaoPronta = true;
             validadorOperacaoJogador = new ValidadorDeOperacao(jogador);
-            if (jogador.getPosicao().equals(JOGADOR1) && primeiraRodada) {
+            if (jogador.getPosicao().equals(JOGADOR1) && status.equals(NAO_INICIADA)) {
                 carregaConfiguracaoInicial();
                 new TelaConfiguracao(null, "Configuracao Partida", true, this);
             }
-            primeiraRodada = false;
-
+            status = CONFIGURACAO_PRONTA;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -134,5 +140,14 @@ public class Tabuleiro {
 
     private PosicaoTabuleiro getPosicaoAdversario(Jogador jogador) {
         return (jogador.getPosicao() == JOGADOR1) ? JOGADOR2 : JOGADOR1;
+    }
+
+    public void desconectar() {
+        limpaCartasSelecionadas();
+        baralho = new Baralho();
+        distribuidorDeCartas = new DistribuidorDeCartas(baralho);
+        jogador = null;
+        adversario = null;
+        status = NAO_INICIADA;
     }
 }

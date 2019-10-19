@@ -1,6 +1,5 @@
 package br.ufsc.ine5608.view;
 
-import br.ufsc.ine5608.actor.AtorJogador;
 import br.ufsc.ine5608.model.Tabuleiro;
 
 import javax.swing.*;
@@ -59,10 +58,6 @@ public class TelaConfiguracao extends JDialog {
 
     private void addListeners() {
         confirmarBotao.addActionListener(actionEvent -> this.dispose());
-    }
-
-    private void mostraMensagem(String mensagem, int tipoMensagem) {
-        JOptionPane.showMessageDialog(null, mensagem, "", tipoMensagem);
     }
 
     private JPanel criarCheckBox() {

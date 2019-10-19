@@ -6,6 +6,8 @@ import br.ufsc.ine5608.shared.Mensagens;
 import javax.swing.*;
 import java.awt.*;
 
+import static br.ufsc.ine5608.shared.Mensagens.mostraMensagem;
+
 class TelaConectar extends JDialog {
 
 
@@ -67,18 +69,17 @@ class TelaConectar extends JDialog {
         conectarBotao.addActionListener(actionEvent -> {
             try {
                 atorJogador.getTabuleiro().criaJogador(nomeCampo.getText());
-                if (!atorJogador.conectar())
-                    throw new Exception(Mensagens.ERRO_CONEXAO);
-                mostraMensagem(Mensagens.CONECTADO,JOptionPane.INFORMATION_MESSAGE);
-                this.dispose();
-            } catch (Exception e) {
+                   if (!atorJogador.conectar())
+                       throw new Exception(Mensagens.ERRO_CONEXAO);
+                   atorJogador.setConectado(true);
+                   this.dispose();
+                   mostraMensagem(Mensagens.OPERACAO_SUCESSO,JOptionPane.OK_OPTION);
+               } catch (Exception e) {
                 mostraMensagem(e.getMessage(),JOptionPane.ERROR_MESSAGE);
             }
         });
         cancelarBotao.addActionListener(actionEvent -> dispose());
     }
 
-    private void mostraMensagem(String mensagem,int tipoMensagem){
-        JOptionPane.showMessageDialog(null, mensagem, "", tipoMensagem);
-    }
+
 }
