@@ -20,30 +20,32 @@ class ValidadorDeOperacao {
     }
 
     boolean jogadaEhValida(List<Carta> cartasJogada, OperadorMatematico operacao) throws Exception {
-        if (numeroCartasJogadaEhValida(cartasJogada))
-            if (corEhValida(cartasJogada.get(PRIMEIRA_CARTA_JOGADOR), cartasJogada.get(SEGUNDA_CARTA_JOGADOR), cartasJogada.get(CARTA_MESA))) {
-                if (operacaoEhValida().test(cartasJogada, operacao)) {
-                    atualizaPontuacao(operacao);
-                    return true;
-                }
-                throw new Exception(Mensagens.OPERACAO_ERRADA);
+        if (numeroCartasJogadaEhValida(cartasJogada)) {
+            if (operacaoEhValida().test(cartasJogada, operacao)) {
+                calculaPontuacao(operacao, cartasJogada);
+                return true;
             }
-
+            throw new Exception(Mensagens.OPERACAO_ERRADA);
+        }
         throw new Exception(Mensagens.CARTAS_SELECAO_NUMERO_ERRADA);
     }
 
-    private void atualizaPontuacao(OperadorMatematico operacao) {
-
+    private void calculaPontuacao(OperadorMatematico operacao, List<Carta> cartasJogada) {
+        int fator = calculaFator(cartasJogada);
         switch (operacao) {
             case MULTIPLICACAO:
-                incrementaPontuacao(2);
+                incrementaPontuacao(2 * fator);
                 break;
             case DIVISAO:
-                incrementaPontuacao(3);
+                incrementaPontuacao(3 * fator);
                 break;
             default:
-                incrementaPontuacao(1);
+                incrementaPontuacao(fator);
         }
+    }
+
+    private int calculaFator(List<Carta> cartasJogada) {
+        return (corEhValida(cartasJogada.get(PRIMEIRA_CARTA_JOGADOR), cartasJogada.get(SEGUNDA_CARTA_JOGADOR), cartasJogada.get(CARTA_MESA))) ? 2 : 1;
     }
 
     private void incrementaPontuacao(int pontuacao) {
@@ -56,10 +58,8 @@ class ValidadorDeOperacao {
                 cartasJogada.stream().filter(carta -> carta.getPosicaoTabuleiro() == MESA).count() == 1;
     }
 
-    private boolean corEhValida(Carta mesa, Carta carta1, Carta carta2) throws Exception {
-        if (mesa.getCorCartaEnum().equals(carta1.getCorCartaEnum()) && carta1.getCorCartaEnum().equals(carta2.getCorCartaEnum()))
-            return true;
-        throw new Exception(Mensagens.CARTAS_SELECAO_COR_ERRADA);
+    private boolean corEhValida(Carta mesa, Carta carta1, Carta carta2) {
+        return mesa.getCorCartaEnum().equals(carta1.getCorCartaEnum()) && carta1.getCorCartaEnum().equals(carta2.getCorCartaEnum());
     }
 
     private BiPredicate<List<Carta>, OperadorMatematico> operacaoEhValida() {
