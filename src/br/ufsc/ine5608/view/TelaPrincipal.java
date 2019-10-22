@@ -236,7 +236,7 @@ public class TelaPrincipal extends JFrame {
                 }
         );
         iniciarPartidaItem.addActionListener(actionEvent -> {
-                    if (atorJogador.isConectado() && atorJogador.getTabuleiro().getStatus().ordinal() < 2) {
+                    if (atorJogador.isConectado() && !atorJogador.getTabuleiro().partidaEmAndamento()) {
                         atorJogador.iniciarPartida();
                     } else {
                         mostraMensagem(Mensagens.INFO_CONEXAO_NECESSARIA, JOptionPane.INFORMATION_MESSAGE);

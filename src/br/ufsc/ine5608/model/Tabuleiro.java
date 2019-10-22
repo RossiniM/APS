@@ -32,8 +32,8 @@ public class Tabuleiro {
         this.operador = operador;
     }
 
-    public PartidaStatus getStatus() {
-        return status;
+    public boolean partidaEmAndamento() {
+        return status.ordinal() >= 2;
     }
 
     public void setStatus(PartidaStatus status) {

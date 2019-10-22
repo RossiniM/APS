@@ -44,13 +44,11 @@ public class AtorJogador {
     }
 
     public void desconectar() {
-        if (conectado) {
             rede.desconectar();
             tabuleiro.desconectar();
             mostraMensagem(SUCESSO_DESCONEXAO, JOptionPane.INFORMATION_MESSAGE);
             conectado = false;
             telaPrincipal.recarregaLayout();
-        }
     }
 
     public void jogar() throws Exception {
