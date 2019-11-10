@@ -6,46 +6,57 @@ import br.ufsc.inf.leobr.cliente.OuvidorProxy;
 import br.ufsc.inf.leobr.cliente.Proxy;
 import br.ufsc.inf.leobr.cliente.exception.*;
 
+import javax.swing.*;
+
+import static br.ufsc.ine5608.shared.Mensagens.INFO_CONEXAO_PERDIDA;
+import static br.ufsc.ine5608.shared.Mensagens.mostraMensagem;
+
 public class AtorNetGames implements OuvidorProxy {
 
     private Proxy proxy;
-    private boolean conectado = false;
+    private AtorJogador atorJogador;
 
-    public AtorNetGames() {
+    AtorNetGames(AtorJogador atorJogador) {
+        this.atorJogador = atorJogador;
         proxy = Proxy.getInstance();
         proxy.addOuvinte(this);
     }
 
     @Override
     public void iniciarNovaPartida(Integer posicao) {
-        AtorJogador.getInstance().tratarIniciarPartida(posicao);
+        atorJogador.tratarInicioPartida(posicao);
     }
 
     public void iniciarPartida() {
         try {
             proxy.iniciarPartida(2);
         } catch (NaoConectadoException e) {
-            e.printStackTrace();
+            mostraMensagem(e.getMessage(), JOptionPane.ERROR_MESSAGE);
         }
     }
 
     public boolean conectar(Jogador jogador) {
         try {
             proxy.conectar("localhost", jogador.getNome());
-            conectado = true;
+            return true;
         } catch (JahConectadoException | NaoPossivelConectarException | ArquivoMultiplayerException e) {
             e.printStackTrace();
+            return false;
         }
-        return conectado;
     }
 
-    boolean isConectado() {
-        return conectado;
+    public void desconectar() {
+        try {
+            proxy.desconectar();
+        } catch (NaoConectadoException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void finalizarPartidaComErro(String message) {
-
+        mostraMensagem(INFO_CONEXAO_PERDIDA, JOptionPane.INFORMATION_MESSAGE);
+        atorJogador.desconectar();
     }
 
     @Override
@@ -56,10 +67,10 @@ public class AtorNetGames implements OuvidorProxy {
 
     @Override
     public void receberJogada(Jogada jogada) {
-        AtorJogador.getInstance().receberJogada(jogada);
+        atorJogador.receberJogada(jogada);
     }
 
-    public void enviarJogada(Jogada jogada) {
+    void enviarJogada(Jogada jogada) {
         try {
             proxy.enviaJogada(jogada);
         } catch (NaoJogandoException e) {
@@ -69,7 +80,6 @@ public class AtorNetGames implements OuvidorProxy {
 
     @Override
     public void tratarConexaoPerdida() {
-
     }
 
     public String informarNomeAdversario(String nomeUsuario) {
@@ -83,7 +93,6 @@ public class AtorNetGames implements OuvidorProxy {
 
     @Override
     public void tratarPartidaNaoIniciada(String message) {
-        System.out.println(message);
-
+        mostraMensagem(message, JOptionPane.INFORMATION_MESSAGE);
     }
 }

@@ -6,16 +6,19 @@ import br.ufsc.ine5608.shared.Mensagens;
 import javax.swing.*;
 import java.awt.*;
 
-public class TelaConectar extends JDialog {
+import static br.ufsc.ine5608.shared.Mensagens.mostraMensagem;
+
+class TelaConectar extends JDialog {
 
 
-    private JLabel nomeLabel;
     private JTextField nomeCampo;
     private JButton conectarBotao;
     private JButton cancelarBotao;
+    private AtorJogador atorJogador;
 
-    public TelaConectar(Frame frame, String title, boolean modal) {
+    TelaConectar(Frame frame, String title, boolean modal, AtorJogador atorJogador) {
         super(frame, title, modal);
+        this.atorJogador = atorJogador;
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         inicializaForm();
@@ -33,7 +36,7 @@ public class TelaConectar extends JDialog {
         GroupLayout layout = new GroupLayout(panel);
         panel.setLayout(layout);
 
-        nomeLabel = new JLabel("Nome:");
+        JLabel nomeLabel = new JLabel("Nome:");
         nomeCampo = new JTextField();
         conectarBotao = new JButton("Conectar");
         cancelarBotao = new JButton("Cancelar");
@@ -65,15 +68,17 @@ public class TelaConectar extends JDialog {
 
         conectarBotao.addActionListener(actionEvent -> {
             try {
-                AtorJogador.getInstance().criaJogador(nomeCampo.getText());
-                if (!AtorJogador.getInstance().conectar())
-                    throw new Exception(Mensagens.ERRO_CONEXAO);
-                JOptionPane.showMessageDialog(null, Mensagens.CONECTADO, "", JOptionPane.INFORMATION_MESSAGE);
-                this.dispose();
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e.getMessage(), "", JOptionPane.ERROR_MESSAGE);
+                atorJogador.getTabuleiro().criaJogador(nomeCampo.getText());
+                   if (!atorJogador.conectar())
+                       throw new Exception(Mensagens.ERRO_CONEXAO);
+                   this.dispose();
+                   mostraMensagem(Mensagens.OPERACAO_SUCESSO,JOptionPane.OK_OPTION);
+               } catch (Exception e) {
+                mostraMensagem(e.getMessage(),JOptionPane.ERROR_MESSAGE);
             }
         });
         cancelarBotao.addActionListener(actionEvent -> dispose());
     }
+
+
 }

@@ -1,22 +1,23 @@
 package br.ufsc.ine5608.model;
 
-import br.ufsc.ine5608.actor.AtorJogador;
-import br.ufsc.ine5608.actor.AtorNetGames;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 
 public class Jogador {
 
-    private int pontuacao;
+    private int pontuacao = 0;
     private String nome;
     private PosicaoTabuleiro posicao;
-    private boolean turno;
-    private boolean conectado;
-    private AtorNetGames atorNetGames;
-    private AtorJogador mesaControlador;
 
     public Jogador(String nome) {
         this.nome = nome;
+    }
 
+    public int getPontuacao() {
+        return pontuacao;
+    }
+
+    void setPontuacao(int pontuacao) {
+        this.pontuacao = pontuacao;
     }
 
     public PosicaoTabuleiro getPosicao() {
@@ -29,9 +30,5 @@ public class Jogador {
 
     public String getNome() {
         return nome;
-    }
-
-    public void setConectado(boolean status) {
-        conectado = status;
     }
 }
