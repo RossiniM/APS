@@ -72,7 +72,7 @@ class TelaConectar extends JDialog {
                    if (!atorJogador.conectar())
                        throw new Exception(Mensagens.ERRO_CONEXAO);
                    this.dispose();
-                   mostraMensagem(Mensagens.OPERACAO_SUCESSO,JOptionPane.OK_OPTION);
+                   mostraMensagem(Mensagens.SUCESSO_CONEXAO, JOptionPane.INFORMATION_MESSAGE);
                } catch (Exception e) {
                 mostraMensagem(e.getMessage(),JOptionPane.ERROR_MESSAGE);
             }

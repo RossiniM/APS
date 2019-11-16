@@ -2,6 +2,7 @@ package br.ufsc.ine5608.actor;
 
 import br.ufsc.ine5608.model.Operacao;
 import br.ufsc.ine5608.model.Tabuleiro;
+import br.ufsc.ine5608.shared.Mensagens;
 import br.ufsc.ine5608.shared.PosicaoTabuleiro;
 import br.ufsc.ine5608.view.TelaPrincipal;
 import br.ufsc.inf.leobr.cliente.Jogada;
@@ -44,21 +45,23 @@ public class AtorJogador {
     }
 
     public void desconectar() {
-            rede.desconectar();
-            tabuleiro.desconectar();
-            mostraMensagem(SUCESSO_DESCONEXAO, JOptionPane.INFORMATION_MESSAGE);
-            conectado = false;
-            telaPrincipal.recarregaLayout();
+        rede.desconectar();
+        tabuleiro.desconectar();
+        mostraMensagem(SUCESSO_DESCONEXAO, JOptionPane.INFORMATION_MESSAGE);
+        conectado = false;
+        telaPrincipal.recarregaLayout();
     }
 
     public void jogar() throws Exception {
         tabuleiro.realizarJogada();
         enviarJogada();
+        if (!tabuleiro.partidaEmAndamento()) tratarEncerramentoDePartida();
     }
 
     void receberJogada(Jogada jogada) {
         tabuleiro.tratarRecebimentoJogada((Operacao) jogada);
         telaPrincipal.recarregaLayout();
+        if (!tabuleiro.partidaEmAndamento()) tratarEncerramentoDePartida();
     }
 
     public void enviarJogada() {
@@ -74,6 +77,21 @@ public class AtorJogador {
         tabuleiro.tratarIniciarPartida(posicaoJogador, rede);
         if (tabuleiro.getJogador().getPosicao().equals(PosicaoTabuleiro.JOGADOR1))
             enviarJogada();
+    }
+
+    private void tratarEncerramentoDePartida() {
+        switch (tabuleiro.getStatus()) {
+            case EMPATADA:
+                Mensagens.mostraMensagem(Mensagens.PARTIDA_EMPATADA, JOptionPane.INFORMATION_MESSAGE);
+                break;
+            case TERMINADA:
+                Mensagens.mostraMensagem(Mensagens.PARTIDA_ENCERRADA + " O jogador" + tabuleiro.getNomeGanhador() + "venceu.", JOptionPane.INFORMATION_MESSAGE);
+                break;
+            case TERMINADA_SEM_CARTAS:
+                Mensagens.mostraMensagem(Mensagens.PARTIDA_ENCERRADA_SEM_CARTAS + " O jogador" + tabuleiro.getNomeGanhador() + "venceu.", JOptionPane.INFORMATION_MESSAGE);
+                break;
+        }
+        desconectar();
     }
 
     public boolean ehMinhaVez() {

@@ -56,7 +56,7 @@ public class AtorNetGames implements OuvidorProxy {
     @Override
     public void finalizarPartidaComErro(String message) {
         mostraMensagem(INFO_CONEXAO_PERDIDA, JOptionPane.INFORMATION_MESSAGE);
-        atorJogador.desconectar();
+        desconectar();
     }
 
     @Override
@@ -80,6 +80,8 @@ public class AtorNetGames implements OuvidorProxy {
 
     @Override
     public void tratarConexaoPerdida() {
+        mostraMensagem(INFO_CONEXAO_PERDIDA, JOptionPane.INFORMATION_MESSAGE);
+        desconectar();
     }
 
     public String informarNomeAdversario(String nomeUsuario) {
