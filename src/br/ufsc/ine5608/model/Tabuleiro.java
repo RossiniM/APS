@@ -33,7 +33,11 @@ public class Tabuleiro {
     }
 
     public boolean partidaEmAndamento() {
-        return status.ordinal() >= 2;
+        return status == ANDAMENTO;
+    }
+
+    public PartidaStatus getStatus() {
+        return status;
     }
 
     public void setStatus(PartidaStatus status) {
@@ -65,8 +69,14 @@ public class Tabuleiro {
 
     public void realizarJogada() throws Exception {
         cartasJogada = distribuidorDeCartas.filtrarCartasSelecionadas(cartasSelecionada, jogador.getPosicao());
-        if (validadorOperacao.jogadaEhValida(cartasJogada, operador))
-            distribuidorDeCartas.atualizarCartas(jogador, cartasJogada);
+        if (validadorOperacao.jogadaEhValida(cartasJogada, operador)) {
+            try {
+                distribuidorDeCartas.atualizarCartas(jogador, cartasJogada);
+                status = (jogadorGanhou(jogador)) ? TERMINADA : ANDAMENTO;
+            } catch (Exception e) {
+                status = (temGanhador()) ? TERMINADA_SEM_CARTAS : EMPATADA;
+            }
+        }
     }
 
     public boolean ehMinhaVez() {
@@ -78,18 +88,30 @@ public class Tabuleiro {
         cartasJogada.clear();
     }
 
+    private boolean jogadorGanhou(Jogador jogador) {
+        return !(jogador.getPontuacao() < this.pontuacaoMaxima);
+    }
+
+    private boolean temGanhador() {
+        return jogador.getPontuacao() != adversario.getPontuacao();
+    }
+
+    public String getNomeGanhador() {
+        return (jogador.getPontuacao() > adversario.getPontuacao()) ? jogador.getNome() : adversario.getNome();
+    }
+
     public void tratarRecebimentoJogada(Operacao operacao) {
-        status = ANDAMENTO;
         baralho.setCartas(operacao.getCartas());
         pontuacaoMaxima = operacao.getPontuacaoMax();
         adversario.setPontuacao(operacao.getPontuacaoAdversario());
+        status = operacao.getPartidaStatus();
         limpaCartasSelecionadas();
-        vez = true;
+        if (partidaEmAndamento()) vez = true;
     }
 
     public Jogada criarJogada() {
         desabilitaJogador();
-        return new Operacao(baralho.getCartas(), jogador.getPontuacao(), pontuacaoMaxima);
+        return new Operacao(baralho.getCartas(), jogador.getPontuacao(), pontuacaoMaxima, status);
     }
 
     private void desabilitaJogador() {
@@ -110,7 +132,7 @@ public class Tabuleiro {
                 carregaConfiguracaoInicial();
                 new TelaConfiguracao(null, "Configuracao Partida", true, this);
             }
-            status = CONFIGURACAO_PRONTA;
+            status = ANDAMENTO;
         } catch (Exception e) {
             e.printStackTrace();
         }

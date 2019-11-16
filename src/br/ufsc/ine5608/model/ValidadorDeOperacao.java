@@ -22,7 +22,7 @@ class ValidadorDeOperacao {
     boolean jogadaEhValida(List<Carta> cartasJogada, OperadorMatematico operacao) throws Exception {
         if (numeroCartasJogadaEhValida(cartasJogada)) {
             if (operacaoEhValida().test(cartasJogada, operacao)) {
-                calculaPontuacao(operacao, cartasJogada);
+                atualizaPontuacao(operacao, cartasJogada);
                 return true;
             }
             throw new Exception(Mensagens.OPERACAO_ERRADA);
@@ -30,7 +30,7 @@ class ValidadorDeOperacao {
         throw new Exception(Mensagens.CARTAS_SELECAO_NUMERO_ERRADA);
     }
 
-    private void calculaPontuacao(OperadorMatematico operacao, List<Carta> cartasJogada) {
+    private void atualizaPontuacao(OperadorMatematico operacao, List<Carta> cartasJogada) {
         int fator = calculaFator(cartasJogada);
         switch (operacao) {
             case MULTIPLICACAO:
